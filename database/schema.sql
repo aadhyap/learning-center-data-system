@@ -4,7 +4,9 @@ CREATE TABLE students (
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(100),
     program VARCHAR(50),
-    belt VARCHAR(50)
+    belt VARCHAR(50),
+    debrief_method VARCHAR(20)
+        CHECK (debrief_method IN ('in_person', 'email'))
 );
 
 CREATE TABLE sessions (
@@ -13,5 +15,6 @@ CREATE TABLE sessions (
     session_date TIMESTAMPTZ NOT NULL,
     next_session TEXT,
     achievements TEXT,
-    notes TEXT
+    notes TEXT,
+    debrief BOOLEAN NOT NULL DEFAULT TRUE
 );
