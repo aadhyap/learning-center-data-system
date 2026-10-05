@@ -6,8 +6,8 @@ CREATE TABLE students (
     program VARCHAR(50),
     belt VARCHAR(50),
     debrief_method VARCHAR(20)
-        CHECK (debrief_method IN ('in_person', 'email'))
-    summary TEXT,
+        CHECK (debrief_method IN ('in_person', 'email')),
+    summary TEXT
 );
 
 CREATE TABLE sessions (
