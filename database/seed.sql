@@ -3,7 +3,7 @@ INSERT INTO students
     (username, first_name, last_name, email, program, belt)
 VALUES
     ('ryan01', 'Ryan', 'Brodski', 'ryan@example.com', 'CREATE', 'Green'),
-    ('hannah01', 'Hannah', 'Nguyen', 'hannah@example.com', 'CREATE', 'Bronze'),
+    ('hannah01', 'Hannah', 'Nguyen', 'hannah@example.com', 'CREATE', 'Bronze');
 
 --Making Session Data Table 
 INSERT INTO sessions
@@ -21,7 +21,7 @@ VALUES
         '2026-10-04 15:00:00-07',
         'Finish Block Jumper',
         'Worked independently',
-        'Made progress on the wall mechanics.'
+        'Made prosgress on the wall mechanics.'
     ),
     (
         'hannah01',

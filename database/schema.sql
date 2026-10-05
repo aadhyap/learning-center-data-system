@@ -10,8 +10,8 @@ CREATE TABLE students (
 CREATE TABLE sessions (
     session_id SERIAL PRIMARY KEY,
     username VARCHAR(100) NOT NULL REFERENCES students(username),
-    session_date TIMESTAMPTZ NOT NULL
-    nextSession TEXT,
+    session_date TIMESTAMPTZ NOT NULL,
+    next_session TEXT,
     achievements TEXT,
-    notes TEXT,
+    notes TEXT
 );
