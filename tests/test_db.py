@@ -1,6 +1,7 @@
 #Python function → psycopg → PostgreSQL → tables → result back to Python
 
 from db import (
+    get_connection,
     search_students,
     add_student,
     edit_student,
@@ -8,6 +9,23 @@ from db import (
     get_students_today
 )
 
+def cleanup_test_student():
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                DELETE FROM sessions
+                WHERE student_id IN (
+                    SELECT student_id
+                    FROM students
+                    WHERE username = 'test01'
+                );
+            """)
+
+            cur.execute("""
+                DELETE FROM students
+                WHERE username = 'test01';
+            """)
 
 # -------------------------
 # TEST SEARCH
@@ -104,7 +122,7 @@ def test_check_in(student_id):
 # -------------------------
 # RUN TESTS
 # -------------------------
-
+cleanup_test_student()
 test_search_student()
 
 student_id = test_add_student()
