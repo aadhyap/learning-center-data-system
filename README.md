@@ -33,6 +33,8 @@ Each session represents a visit to the learning center and contains the student'
 
 Students can also be categorized using **programs** and **tags**, allowing instructors to filter and retrieve students based on operational needs.
 
+<img width="566" height="696" alt="Screenshot 2026-10-05 at 11 31 25 AM" src="https://github.com/user-attachments/assets/6bc15f76-513b-419f-a4a9-ba8569ab3378" />
+
 ## Example Queries
 
 The system is designed to answer questions such as:
