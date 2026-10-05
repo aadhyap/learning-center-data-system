@@ -1,6 +1,6 @@
 CREATE TABLE students (
     student_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    username VARCHAR(100) UNIQUE NOT NULL
+    username VARCHAR(100) UNIQUE NOT NULL,
     first_name VARCHAR(50) NOT NULL, 
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(100),
