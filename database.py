@@ -1,7 +1,11 @@
 import psycopg
 
 # Connect to an existing database
-#def get_connection():
+def get_connection():
+    return psycopg.connect(
+        dbname="learning_center",
+        user="aadhyaputtur"
+    )
 
 
 def search_students(search):
@@ -9,6 +13,7 @@ def search_students(search):
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT
+                    student_id,
                     username,
                     first_name,
                     last_name,
@@ -19,4 +24,147 @@ def search_students(search):
                 ORDER BY first_name, last_name;
             """, (search + "%",))
 
-            return cur.fetchall(
+            return cur.fetchall()
+
+'''
+
+Add Student
+
+student_id = add_student(
+    "tyler01",
+    "Tyler",
+    "Stewart",
+    "tyler@example.com",
+    "CREATE",
+    "Orange",
+    "in_person",
+    "Enjoys making complex games and works independently."
+)
+
+print(student_id)
+
+'''
+def add_student(
+    username,
+    first_name,
+    last_name,
+    email,
+    program,
+    belt,
+    debrief_method,
+    summary
+):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO students (
+                    username,
+                    first_name,
+                    last_name,
+                    email,
+                    program,
+                    belt,
+                    debrief_method,
+                    summary
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING student_id;
+            """, (
+                username,
+                first_name,
+                last_name,
+                email,
+                program,
+                belt,
+                debrief_method,
+                summary
+            ))
+
+            student_id = cur.fetchone()[0]
+
+    return student_id
+
+'''
+Can Edit Student, can change any of its parameters 
+'''
+def edit_student(
+    student_id,
+    username,
+    first_name,
+    last_name,
+    email,
+    program,
+    belt,
+    debrief_method,
+    summary
+):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE students
+                SET
+                    username = %s,
+                    first_name = %s,
+                    last_name = %s,
+                    email = %s,
+                    program = %s,
+                    belt = %s,
+                    debrief_method = %s,
+                    summary = %s
+                WHERE student_id = %s;
+            """, (
+                username,
+                first_name,
+                last_name,
+                email,
+                program,
+                belt,
+                debrief_method,
+                summary,
+                student_id
+            ))
+
+'''
+Can Check In Student by student_id, create a new session  
+'''
+def check_in_student(student_id):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO sessions (
+                    student_id,
+                    session_date
+                )
+                VALUES (%s, NOW())
+                RETURNING session_id;
+            """, (student_id,))
+
+            session_id = cur.fetchone()[0]
+
+    return session_id
+
+
+'''
+Get all the students that came in Today
+'''
+
+def get_students_today():
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT
+                    students.student_id,
+                    students.first_name,
+                    students.last_name,
+                    students.program,
+                    students.belt,
+                    sessions.session_id,
+                    sessions.session_date
+                FROM sessions
+                JOIN students
+                    ON sessions.student_id = students.student_id
+                WHERE sessions.session_date::date = CURRENT_DATE
+                ORDER BY sessions.session_date;
+            """)
+
+            return cur.fetchall()
