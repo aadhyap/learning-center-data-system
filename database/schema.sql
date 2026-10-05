@@ -1,15 +1,15 @@
 CREATE TABLE students (
-    student_id SERIAL PRIMARY KEY,
-    first_name VARCHAR(50) NOT NULL,
+    username VARCHAR(100) PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL, 
     last_name VARCHAR(50) NOT NULL,
-    email VARCHAR(50),
+    email VARCHAR(100),
     program VARCHAR(50),
     belt VARCHAR(50)
 );
 
 CREATE TABLE sessions (
     session_id SERIAL PRIMARY KEY,
-    student_id INTEGER NOT NULL REFERENCES students(student_id),
+    username VARCHAR(100) NOT NULL REFERENCES students(username),
     session_date TIMESTAMPTZ NOT NULL
     nextSession TEXT,
     achievements TEXT,
