@@ -7,24 +7,24 @@ VALUES
 
 --Making Session Data Table 
 INSERT INTO sessions
-    (username, session_date, next_session, achievements, notes)
+    (student_id, session_date, next_session, achievements, notes)
 VALUES
     (
-        'ryan01',
+        (SELECT student_id FROM students WHERE username = 'ryan01'),
         '2026-09-28 14:00:00-07',
         'Continue Block Jumper',
         'Created collision blocks',
         'Worked on understanding how to place blocks underneath the player.'
     ),
     (
-        'ryan01',
+        (SELECT student_id FROM students WHERE username = 'ryan01'),
         '2026-10-04 15:00:00-07',
         'Finish Block Jumper',
         'Worked independently',
-        'Made prosgress on the wall mechanics.'
+        'Made progress on the wall mechanics.'
     ),
     (
-        'hannah01',
+        (SELECT student_id FROM students WHERE username = 'hannah01'),
         '2026-10-04 16:00:00-07',
         'Continue Labyrinth',
         'Finished Cyber Fu',

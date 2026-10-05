@@ -19,4 +19,4 @@ def search_students(search):
                 ORDER BY first_name, last_name;
             """, (search + "%",))
 
-            return cur.fetchall()
+            return cur.fetchall(

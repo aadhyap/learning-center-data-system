@@ -1,4 +1,5 @@
 CREATE TABLE students (
+    student_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     username VARCHAR(100) PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL, 
     last_name VARCHAR(50) NOT NULL,
@@ -11,10 +12,11 @@ CREATE TABLE students (
 );
 
 CREATE TABLE sessions (
-    session_id SERIAL PRIMARY KEY,
+    session_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     username VARCHAR(100) NOT NULL REFERENCES students(username),
     session_date TIMESTAMPTZ NOT NULL,
     next_session TEXT,
     achievements TEXT,
-    notes TEXT
+    notes TEXT,
+    debrief_completed BOOLEAN NOT NULL DEFAULT FALSE
 );
