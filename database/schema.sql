@@ -16,6 +16,5 @@ CREATE TABLE sessions (
     session_date TIMESTAMPTZ NOT NULL,
     next_session TEXT,
     achievements TEXT,
-    notes TEXT,
-    debrief BOOLEAN NOT NULL DEFAULT TRUE
+    notes TEXT
 );

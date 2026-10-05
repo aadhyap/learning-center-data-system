@@ -1,9 +1,9 @@
 --Making Students Table
 INSERT INTO students
-    (username, first_name, last_name, email, program, belt)
+    (username, first_name, last_name, email, program, belt, debrief_method, summary)
 VALUES
-    ('ryan01', 'Ryan', 'Brodski', 'ryan@example.com', 'CREATE', 'Green'),
-    ('hannah01', 'Hannah', 'Nguyen', 'hannah@example.com', 'CREATE', 'Bronze');
+    ('ryan01', 'Ryan', 'Brodski', 'ryan@example.com', 'CREATE', 'Green', 'in_person', 'good student, sometimes asks for help for things too much just needs to be encouraged to do it on his own.'),
+    ('hannah01', 'Hannah', 'Nguyen', 'hannah@example.com', 'CREATE', 'Bronze', 'email', 'works independently needs very little help, progresses fast');
 
 --Making Session Data Table 
 INSERT INTO sessions
