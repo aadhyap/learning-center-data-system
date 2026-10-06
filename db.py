@@ -27,6 +27,28 @@ def search_students(search):
             return cur.fetchall()
 
 '''
+Get all sessions for one student, newest first
+'''
+def get_student_history(student_id):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT
+                    session_id,
+                    student_id,
+                    session_date,
+                    next_session,
+                    achievements,
+                    notes,
+                    debrief_completed
+                FROM sessions
+                WHERE student_id = %s
+                ORDER BY session_date DESC;
+            """, (student_id,))
+
+            return cur.fetchall()
+
+'''
 
 Add Student
 
