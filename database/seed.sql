@@ -1,4 +1,4 @@
---Making Students Table
+--Seeding fake data
 INSERT INTO students
     (username, first_name, last_name, email, program, belt, debrief_method, summary)
 VALUES

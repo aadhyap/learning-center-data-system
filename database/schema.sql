@@ -1,3 +1,4 @@
+--Structure of Database
 CREATE TABLE students (
     student_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,
