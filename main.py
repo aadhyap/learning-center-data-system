@@ -6,10 +6,10 @@ from db import (
     add_student,
     edit_student,
     check_in_student,
+    get_students_today,
     get_student_history,
-    get_students_today
+    edit_session
 )
-
 
 app = FastAPI()
 class StudentCreate(BaseModel):
@@ -32,6 +32,12 @@ class StudentUpdate(BaseModel):
     debrief_method: str | None = None
     summary: str | None = None
 
+class SessionUpdate(BaseModel):
+    next_session: str | None = None
+    achievements: str | None = None
+    notes: str | None = None
+    debrief_completed: bool = False
+    
 @app.get("/")
 def root():
         return {"message" : "Student Progress API is running"}
