@@ -1,10 +1,16 @@
+import os
 import psycopg
+from dotenv import load_dotenv
 
+load_dotenv()
 # Connect to an existing database
 def get_connection():
     return psycopg.connect(
-        dbname="learning_center",
-        user="aadhyaputtur"
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD")
     )
 
 
@@ -146,6 +152,33 @@ def edit_student(
                 student_id
             ))
 
+'''
+Can Edit Student Session
+'''
+def edit_session(
+    session_id,
+    next_session,
+    achievements,
+    notes,
+    debrief_completed
+):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE sessions
+                SET
+                    next_session = %s,
+                    achievements = %s,
+                    notes = %s,
+                    debrief_completed = %s
+                WHERE session_id = %s;
+            """, (
+                next_session,
+                achievements,
+                notes,
+                debrief_completed,
+                session_id
+            ))
 '''
 Can Check In Student by student_id, create a new session  
 '''

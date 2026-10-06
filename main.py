@@ -37,7 +37,7 @@ class SessionUpdate(BaseModel):
     achievements: str | None = None
     notes: str | None = None
     debrief_completed: bool = False
-    
+
 @app.get("/")
 def root():
         return {"message" : "Student Progress API is running"}
@@ -105,6 +105,22 @@ def update_student(student_id: int, student: StudentUpdate):
 
     return {
         "message": "Student updated"
+    }
+
+#Update Session
+@app.put("/sessions/{session_id}")
+def update_session(session_id: int, session: SessionUpdate):
+
+    edit_session(
+        session_id,
+        session.next_session,
+        session.achievements,
+        session.notes,
+        session.debrief_completed
+    )
+
+    return {
+        "message": "Session updated"
     }
 
 #Get Students history
