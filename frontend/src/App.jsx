@@ -94,6 +94,7 @@ function App() {
       {page === "today" ? (
 
         <TodayStudents
+          todayStudents={todayStudents}
           onBack={() => {
             setSelectedStudentId(null);
             setPage("students");

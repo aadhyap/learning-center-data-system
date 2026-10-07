@@ -182,3 +182,33 @@
     border-right-color: var(--border);
   }
 }
+
+
+.today-content {
+  flex: 1;
+  margin-top: 32px;
+}
+
+.today-student-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 20px;
+  margin-bottom: 12px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+}
+
+.today-student-card h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.today-student-card p {
+  margin: 5px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
