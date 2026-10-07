@@ -172,18 +172,27 @@ Can Check In Student by student_id, create a new session
 def check_in_student(student_id):
     with get_connection() as conn:
         with conn.cursor() as cur:
-            cur.execute("""
+            cur.execute(
+                """
                 INSERT INTO sessions (
                     student_id,
-                    session_date
+                    session_date,
+                    belt,
+                    belt_level
                 )
-                VALUES (%s, NOW())
-                RETURNING session_id;
-            """, (student_id,))
+                SELECT
+                    student_id,
+                    NOW(),
+                    belt,
+                    belt_level
+                FROM students
+                WHERE student_id = %s
+                RETURNING session_id
+                """,
+                (student_id,)
+            )
 
-            session_id = cur.fetchone()[0]
-
-    return session_id
+            return cur.fetchone()[0]
 
 def get_all_students():
     with get_connection() as conn:
