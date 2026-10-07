@@ -58,19 +58,6 @@ def get_student_history(student_id):
 
 Add Student
 
-student_id = add_student(
-    "tyler01",
-    "Tyler",
-    "Stewart",
-    "tyler@example.com",
-    "CREATE",
-    "Orange",
-    "in_person",
-    "Enjoys making complex games and works independently."
-)
-
-print(student_id)
-
 '''
 def add_student(
     username,
@@ -198,7 +185,30 @@ def check_in_student(student_id):
 
     return session_id
 
+def get_all_students():
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT
+                    student_id,
+                    username,
+                    first_name,
+                    last_name,
+                    email,
+                    program,
+                    belt,
+                    debrief_method,
+                    summary
+                FROM students
+                ORDER BY first_name, last_name
+            """)
 
+            columns = [desc[0] for desc in cur.description]
+
+            return [
+                dict(zip(columns, row))
+                for row in cur.fetchall()
+            ]
 '''
 Get all the students that came in Today
 '''

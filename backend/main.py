@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from db import (
@@ -8,10 +9,20 @@ from db import (
     check_in_student,
     get_students_today,
     get_student_history,
+    get_all_students,
     edit_session
 )
 
 app = FastAPI()
+#to let FastAPI let the React app running at localhost:5173 to make browser requests to me
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class StudentCreate(BaseModel):
     username: str
     first_name: str
@@ -42,7 +53,7 @@ class SessionUpdate(BaseModel):
 def root():
         return {"message" : "Student Progress API is running"}
 
-#Search Student
+#Searches Student
 @app.get("/students/search")
 def search(name: str):
         students = search_students(name)
@@ -123,6 +134,12 @@ def update_session(session_id: int, session: SessionUpdate):
         "message": "Session updated"
     }
 
+# Get all students
+@app.get("/students")
+def all_students():
+    return get_all_students()
+
+    
 #Get Students history
 @app.get("/students/{student_id}/history")
 def student_history(student_id: int):

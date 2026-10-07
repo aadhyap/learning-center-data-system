@@ -80,3 +80,72 @@ body {
 
   cursor: pointer;
 }
+
+.ninja-list {
+  margin-top: 36px;
+}
+
+.ninja-card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  padding: 20px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  background: white;
+}
+
+.ninja-avatar {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #f3f4f6;
+  font-weight: 600;
+}
+
+.ninja-info {
+  flex: 1;
+}
+
+.ninja-info h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.ninja-info p {
+  margin: 4px 0 0;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.ninja-detail {
+  min-width: 120px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.detail-label {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.view-button {
+  padding: 8px 12px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+
+  background: white;
+  cursor: pointer;
+}
