@@ -1,3 +1,5 @@
+import TodayDetailsCard from "./components/TodayDetailsCard";
+
 function TodayStudents({
   todayStudents,
   onBack
@@ -11,7 +13,6 @@ function TodayStudents({
     year: "numeric"
   });
 
-
   return (
     <div className="today-page">
 
@@ -24,30 +25,16 @@ function TodayStudents({
 
       <div className="today-content">
 
-                {todayStudents.length === 0 ? (
-                <p>No students checked in today.</p>
-                ) : (
-                todayStudents.map((student) => (
-                <div
-                        className="today-student-card"
-                        key={student.session_id}
-                >
-                        <div>
-                        <h2>
-                        {student.first_name} {student.last_name}
-                        </h2>
-
-                        <p>
-                        {student.program} · {student.belt}
-                        </p>
-                        </div>
-
-                        <span>
-                        Session #{student.session_id}
-                        </span>
-                </div>
-                ))
-                )}
+        {todayStudents.length === 0 ? (
+          <p>No students checked in today.</p>
+        ) : (
+          todayStudents.map((student) => (
+            <TodayDetailsCard
+              key={student.session_id}
+              student={student}
+            />
+          ))
+        )}
 
       </div>
 

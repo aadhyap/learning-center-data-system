@@ -212,3 +212,70 @@
   color: #6b7280;
   font-size: 14px;
 }
+
+
+.today-details-card {
+  padding: 24px;
+  margin-bottom: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+}
+
+.today-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+  margin-bottom: 24px;
+}
+
+.today-card-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.today-card-header p {
+  margin: 5px 0 0;
+  color: #6b7280;
+}
+
+.today-belt {
+  width: 180px;
+}
+
+.today-belt input {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.today-field {
+  margin-top: 18px;
+}
+
+.today-field textarea {
+  display: block;
+  width: 100%;
+  min-height: 110px;
+  margin-top: 6px;
+  padding: 12px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+
+  resize: vertical;
+}
+
+.today-field textarea:focus,
+.today-belt input:focus {
+  outline: none;
+  border-color: #9ca3af;
+}
