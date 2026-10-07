@@ -62,12 +62,18 @@ function TodayDetailsCard({
         className="today-card-header"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div>
-          <h2>
-            {student.first_name} {student.last_name}
-          </h2>
+        <div className="today-student-title">
+                <h2>
+                {student.first_name} {student.last_name}
+                </h2>
 
-          <p>{student.program}</p>
+                <span className="today-program">
+                {student.program}
+                </span>
+
+                <span className="today-belt-label">
+                {student.belt} Belt {student.belt_level}
+                </span>
         </div>
 
         <div className="today-card-header-right">

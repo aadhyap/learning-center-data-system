@@ -335,3 +335,18 @@
 .today-details-card.debrief-complete .today-card-belt {
   color: #9ca3af;
 }
+.today-student-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.today-student-title h2 {
+  margin: 0;
+}
+
+.today-program,
+.today-belt-label {
+  font-size: 14px;
+  color: #6b7280;
+}
