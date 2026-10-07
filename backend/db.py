@@ -190,17 +190,21 @@ def get_all_students():
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT
-                    student_id,
-                    username,
-                    first_name,
-                    last_name,
-                    email,
-                    program,
-                    belt,
-                    debrief_method,
-                    summary
+                    students.student_id,
+                    students.username,
+                    students.first_name,
+                    students.last_name,
+                    students.email,
+                    students.program,
+                    students.belt,
+                    students.debrief_method,
+                    students.summary,
+                    MAX(sessions.session_date) AS last_session
                 FROM students
-                ORDER BY first_name, last_name
+                LEFT JOIN sessions
+                    ON students.student_id = sessions.student_id
+                GROUP BY students.student_id
+                ORDER BY students.first_name, students.last_name
             """)
 
             columns = [desc[0] for desc in cur.description]
