@@ -81,11 +81,13 @@ body {
   cursor: pointer;
 }
 
-.ninja-list {
+/* STUDENT LIST */
+
+.student-list {
   margin-top: 36px;
 }
 
-.ninja-card {
+.student-card {
   display: flex;
   align-items: center;
   gap: 24px;
@@ -98,7 +100,7 @@ body {
   background: white;
 }
 
-.ninja-avatar {
+.student-avatar {
   width: 48px;
   height: 48px;
 
@@ -112,22 +114,22 @@ body {
   font-weight: 600;
 }
 
-.ninja-info {
+.student-info {
   flex: 1;
 }
 
-.ninja-info h2 {
+.student-info h2 {
   margin: 0;
   font-size: 17px;
 }
 
-.ninja-info p {
+.student-info p {
   margin: 4px 0 0;
   color: #9ca3af;
   font-size: 14px;
 }
 
-.ninja-detail {
+.student-detail {
   min-width: 120px;
 
   display: flex;
@@ -140,6 +142,87 @@ body {
   font-size: 12px;
 }
 
+
+/*Session*/
+.session-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.session-card {
+  display: grid;
+
+  grid-template-columns: 140px 2fr 1fr;
+  grid-template-areas:
+    "date notes next"
+    ". achievements achievements";
+
+  column-gap: 32px;
+  row-gap: 14px;
+
+  padding: 18px 22px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  background: white;
+}
+
+.session-date {
+  grid-area: date;
+
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.session-notes {
+  grid-area: notes;
+}
+
+.session-next {
+  grid-area: next;
+}
+
+.session-achievements {
+  grid-area: achievements;
+}
+
+.session-detail p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+
+/* Buttons */
+/* STUDENT PROFILE */
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 12px;
+  margin-bottom: 24px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+
+  background: white;
+  color: #6b7280;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.back-button:hover {
+  background: #f9fafb;
+  color: #111827;
+}
 .view-button {
   padding: 8px 12px;
 
