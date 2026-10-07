@@ -232,3 +232,54 @@ body {
   background: white;
   cursor: pointer;
 }
+
+
+
+
+
+.checkin-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 180px;
+}
+
+.checkin-control .detail-label {
+  white-space: nowrap;
+}
+
+.checkin-toggle {
+  flex-shrink: 0;
+
+  width: 44px;
+  height: 24px;
+  padding: 2px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: #d1d5db;
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.checkin-toggle.active {
+  background: #22c55e;
+}
+
+.toggle-circle {
+  display: block;
+
+  width: 20px;
+  height: 20px;
+
+  border-radius: 50%;
+  background: white;
+
+  transition: transform 0.2s ease;
+}
+
+.checkin-toggle.active .toggle-circle {
+  transform: translateX(20px);
+}

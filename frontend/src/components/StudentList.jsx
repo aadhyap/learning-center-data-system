@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 function timeAgo(date) {
   if (!date) {
     return "Never";
@@ -21,6 +23,21 @@ function timeAgo(date) {
 }
 
 function StudentList({ students, onSelectStudent }) {
+  const [checkedInStudents, setCheckedInStudents] = useState([]);
+
+  function toggleCheckIn(studentId) {
+    if (checkedInStudents.includes(studentId)) {
+      setCheckedInStudents(
+        checkedInStudents.filter((id) => id !== studentId)
+      );
+    } else {
+      setCheckedInStudents([
+        ...checkedInStudents,
+        studentId
+      ]);
+    }
+  }
+
   return (
     <>
       <div className="page-header">
@@ -35,6 +52,9 @@ function StudentList({ students, onSelectStudent }) {
       <div className="student-list">
         {students.map((student) => {
           console.log(student.first_name, student.last_session);
+
+          const isCheckedIn =
+            checkedInStudents.includes(student.student_id);
 
           return (
             <div className="student-card" key={student.student_id}>
@@ -66,6 +86,20 @@ function StudentList({ students, onSelectStudent }) {
                 <span>{timeAgo(student.last_session)}</span>
               </div>
 
+              <div className="checkin-control">
+                <span className="detail-label">Check In</span>
+
+                <button
+                  className={`checkin-toggle ${isCheckedIn ? "active" : ""}`}
+                  onClick={() => toggleCheckIn(student.student_id)}
+                >
+                  <span className="toggle-circle"></span>
+                </button>
+            </div>
+
+              
+
+            
               <button
                 className="view-button"
                 onClick={() => onSelectStudent(student)}
@@ -74,6 +108,8 @@ function StudentList({ students, onSelectStudent }) {
               </button>
 
             </div>
+
+            
           );
         })}
       </div>
