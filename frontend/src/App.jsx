@@ -12,7 +12,10 @@ function App() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [page, setPage] = useState("students");
 
-  const { students } = useStudents();
+  const {
+    students,
+    saveStudent
+  } = useStudents();
 
   const {
     todayStudents,
@@ -97,6 +100,7 @@ function App() {
 
         <StudentProfile
           student={selectedStudent}
+          onSave={saveStudent}
           onBack={() => setSelectedStudent(null)}
         />
 

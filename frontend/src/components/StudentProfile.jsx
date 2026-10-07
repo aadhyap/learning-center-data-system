@@ -2,7 +2,11 @@ import SessionHistory from "./SessionHistory";
 import { useState } from "react";
 import { useStudentHistory } from "../queries/useStudentHistory";
 
-function StudentProfile({ student, onBack }) {
+function StudentProfile({
+  student,
+  onBack,
+  onSave
+}) {
   const { sessions } = useStudentHistory(student.student_id);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -23,6 +27,34 @@ function StudentProfile({ student, onBack }) {
       [name]: value
     });
   }
+
+  async function handleSave() {
+  console.log("SAVE BUTTON CLICKED");
+
+  const updatedStudent = {
+    username: student.username,
+    first_name: formData.first_name,
+    last_name: formData.last_name,
+    email: student.email,
+    program: formData.program,
+    belt: formData.belt,
+    debrief_method: student.debrief_method,
+    summary: formData.summary
+  };
+
+  console.log("Sending student:", updatedStudent);
+
+  const success = await onSave(
+    student.student_id,
+    updatedStudent
+  );
+
+  console.log("Save result:", success);
+
+  if (success) {
+    setIsEditing(false);
+  }
+}
 
 
 
@@ -123,9 +155,12 @@ function StudentProfile({ student, onBack }) {
 
 
         {isEditing && (
-          <button className="back-button">
-            Save Changes
-          </button>
+        <button
+        className="back-button"
+        onClick={handleSave}
+        >
+        Save Changes
+        </button>
         )}
 
       </div>

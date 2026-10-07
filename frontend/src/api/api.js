@@ -61,3 +61,22 @@ export async function getStudentHistory(studentId) {
 
   return response.json();
 }
+
+export async function updateStudent(studentId, studentData) {
+  const response = await fetch(
+    `${API_URL}/students/${studentId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(studentData)
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to update student");
+  }
+
+  return response.json();
+}
