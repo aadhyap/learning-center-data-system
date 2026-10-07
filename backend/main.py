@@ -18,7 +18,10 @@ app = FastAPI()
 #to let FastAPI let the React app running at localhost:5173 to make browser requests to me
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -172,12 +175,13 @@ def students_today():
             "last_name": student[2],
             "program": student[3],
             "belt": student[4],
-            "session_id": student[5],
-            "session_date": student[6],
-            "next_session": student[7],
-            "achievements": student[8],
-            "notes": student[9],
-            "debrief_completed": student[10]
+            "belt_level": student[5],
+            "session_id": student[6],
+            "session_date": student[7],
+            "next_session": student[8],
+            "achievements": student[9],
+            "notes": student[10],
+            "debrief_completed": student[11]
         }
         for student in students
     ]

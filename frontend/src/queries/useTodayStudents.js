@@ -42,35 +42,42 @@ export function useTodayStudents() {
 
 
   async function checkIn(studentId) {
-    // Change UI immediately
-    const temporarySession = {
-      student_id: studentId,
-      session_id: `temp-${studentId}`
-    };
+  const temporarySession = {
+    student_id: studentId,
+    session_id: `temp-${studentId}`
+  };
 
-    setTodayStudents((current) => [
-      ...current,
-      temporarySession
-    ]);
+  setTodayStudents((current) => [
+    ...current,
+    temporarySession
+  ]);
 
-    try {
-      // Create the real session
-      await checkInStudent(studentId);
+  try {
+    const newSession = await checkInStudent(studentId);
 
-      // Replace our temporary data with database data
-      await loadTodayStudents();
+    setTodayStudents((current) =>
+      current.map((student) =>
+        student.session_id === `temp-${studentId}`
+          ? {
+              ...student,
+              session_id: newSession.session_id
+            }
+          : student
+      )
+    );
 
-    } catch (error) {
-      console.error("Error checking in student:", error);
+    await loadTodayStudents();
 
-      // API failed, undo the UI change
-      setTodayStudents((current) =>
-        current.filter(
-          (student) => student.student_id !== studentId
-        )
-      );
-    }
+  } catch (error) {
+    console.error("Error checking in student:", error);
+
+    setTodayStudents((current) =>
+      current.filter(
+        (student) => student.student_id !== studentId
+      )
+    );
   }
+}
 
 
   async function checkOut(sessionId) {

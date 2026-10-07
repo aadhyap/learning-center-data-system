@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 load_dotenv()
 # Connect to an existing database
 def get_connection():
+    print("DB_HOST:", os.getenv("DB_HOST"))
+    print("DB_NAME:", os.getenv("DB_NAME"))
+
     return psycopg.connect(
         host=os.getenv("DB_HOST"),
         port=os.getenv("DB_PORT"),
@@ -187,12 +190,18 @@ def check_in_student(student_id):
                     belt_level
                 FROM students
                 WHERE student_id = %s
+                ON CONFLICT DO NOTHING
                 RETURNING session_id
                 """,
                 (student_id,)
             )
 
-            return cur.fetchone()[0]
+            result = cur.fetchone()
+
+            if result:
+                return result[0]
+
+            return None
 
 def get_all_students():
     with get_connection() as conn:
@@ -235,7 +244,8 @@ def get_students_today():
                     students.first_name,
                     students.last_name,
                     students.program,
-                    students.belt,
+                    sessions.belt,
+                    sessions.belt_level,
                     sessions.session_id,
                     sessions.session_date,
                     sessions.next_session,
