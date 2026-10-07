@@ -97,9 +97,6 @@ function StudentList({ students, onSelectStudent }) {
                 </button>
             </div>
 
-              
-
-            
               <button
                 className="view-button"
                 onClick={() => onSelectStudent(student)}

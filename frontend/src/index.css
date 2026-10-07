@@ -283,3 +283,59 @@ body {
 .checkin-toggle.active .toggle-circle {
   transform: translateX(20px);
 }
+
+/* Summar */
+
+/* PROFILE EDIT FIELDS */
+
+.profile-card input,
+.profile-card textarea {
+  width: 100%;
+  padding: 10px 12px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  font-family: inherit;
+  font-size: 15px;
+  color: #1f2937;
+
+  background: white;
+}
+
+.profile-card input:focus,
+.profile-card textarea:focus {
+  outline: none;
+  border-color: #9ca3af;
+}
+
+/* FIRST + LAST NAME */
+
+.name-inputs {
+  display: flex;
+  gap: 10px;
+  width: 500px;
+}
+
+.name-inputs input {
+  min-width: 0;
+}
+
+/* PROGRAM + BELT */
+
+.profile-details > div {
+  min-width: 220px;
+}
+
+/* SUMMARY */
+
+.profile-summary textarea {
+  width: 100%;
+  min-height: 130px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.profile-summary {
+  margin-top: 24px;
+}
