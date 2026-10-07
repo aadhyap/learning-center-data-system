@@ -10,18 +10,38 @@ function App() {
   const [search, setSearch] = useState("");
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [page, setPage] = useState("students");
+  const [todayStudents, setTodayStudents] = useState([]);
+
+  function loadTodayStudents() {
+  fetch("http://127.0.0.1:8000/students/today")
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Today's students:", data);
+      setTodayStudents(data);
+    })
+    .catch((error) => {
+      console.error("Error loading today's students:", error);
+    });
+}
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/students")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        setStudents(data);
-      })
-      .catch((error) => {
-        console.error("Error loading students:", error);
-      });
-  }, []);
+  // Load all students
+  fetch("http://127.0.0.1:8000/students")
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      setStudents(data);
+    })
+    .catch((error) => {
+      console.error("Error loading students:", error);
+    });
+
+  // Load students who are checked in today
+  loadTodayStudents();
+
+}, []);
+
+  
 
   const filteredStudents = students.filter((student) => {
     const fullName =
@@ -106,6 +126,8 @@ function App() {
 
         <StudentList
           students={filteredStudents}
+          todayStudents={todayStudents}
+          onCheckIn={loadTodayStudents}
           onSelectStudent={setSelectedStudent}
         />
 

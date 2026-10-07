@@ -10,7 +10,8 @@ from db import (
     get_students_today,
     get_student_history,
     get_all_students,
-    edit_session
+    edit_session,
+    delete_session
 )
 
 app = FastAPI()
@@ -139,7 +140,7 @@ def update_session(session_id: int, session: SessionUpdate):
 def all_students():
     return get_all_students()
 
-    
+
 #Get Students history
 @app.get("/students/{student_id}/history")
 def student_history(student_id: int):
@@ -178,3 +179,8 @@ def students_today():
         for student in students
     ]
 
+''' Delete '''
+@app.delete("/sessions/{session_id}")
+def remove_session(session_id: int):
+    delete_session(session_id)
+    return {"message": "Session deleted"}

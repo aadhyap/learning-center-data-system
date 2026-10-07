@@ -237,3 +237,15 @@ def get_students_today():
             """)
 
             return cur.fetchall()
+
+''' Delete '''
+def delete_session(session_id):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                DELETE FROM sessions
+                WHERE session_id = %s
+                """,
+                (session_id,)
+            )

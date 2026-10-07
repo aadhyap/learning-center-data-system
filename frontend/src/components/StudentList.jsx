@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 
 function timeAgo(date) {
   if (!date) {
@@ -22,22 +22,53 @@ function timeAgo(date) {
   return `${months} months ago`;
 }
 
-function StudentList({ students, onSelectStudent }) {
-  const [checkedInStudents, setCheckedInStudents] = useState([]);
+function StudentList({
+  students,
+  todayStudents,
+  onCheckIn,
+  onSelectStudent
+}) {
 
-  function toggleCheckIn(studentId) {
-    if (checkedInStudents.includes(studentId)) {
-      setCheckedInStudents(
-        checkedInStudents.filter((id) => id !== studentId)
-      );
-    } else {
-      setCheckedInStudents([
-        ...checkedInStudents,
-        studentId
-      ]);
+  async function checkInStudent(studentId) {
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:8000/students/${studentId}/check-in`,
+      {
+        method: "POST"
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Check-in failed");
     }
-  }
 
+    onCheckIn();
+
+  } catch (error) {
+    console.error("Error checking in student:", error);
+  }
+}
+
+
+async function deleteSession(sessionId) {
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:8000/sessions/${sessionId}`,
+      {
+        method: "DELETE"
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Deleting session failed");
+    }
+
+    onCheckIn();
+
+  } catch (error) {
+    console.error("Error deleting session:", error);
+  }
+}
   return (
     <>
       <div className="page-header">
@@ -53,8 +84,12 @@ function StudentList({ students, onSelectStudent }) {
         {students.map((student) => {
           console.log(student.first_name, student.last_session);
 
-          const isCheckedIn =
-            checkedInStudents.includes(student.student_id);
+          const todaySession = todayStudents.find(
+            (todayStudent) =>
+              todayStudent.student_id === student.student_id
+          );
+
+          const isCheckedIn = Boolean(todaySession);
 
           return (
             <div className="student-card" key={student.student_id}>
@@ -91,11 +126,17 @@ function StudentList({ students, onSelectStudent }) {
 
                 <button
                   className={`checkin-toggle ${isCheckedIn ? "active" : ""}`}
-                  onClick={() => toggleCheckIn(student.student_id)}
+                  onClick={() => {
+                    if (isCheckedIn) {
+                      deleteSession(todaySession.session_id);
+                    } else {
+                      checkInStudent(student.student_id);
+                    }
+                  }}
                 >
                   <span className="toggle-circle"></span>
                 </button>
-            </div>
+              </div>
 
               <button
                 className="view-button"
