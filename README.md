@@ -22,7 +22,8 @@ Students can also be categorized using **programs** and **tags**, allowing instr
 <img width="566" height="696" alt="Screenshot 2026-10-05 at 11 31 25 AM" src="https://github.com/user-attachments/assets/6bc15f76-513b-419f-a4a9-ba8569ab3378" />
 
 
-#Dev Log 09/06 - backend app AND database are in the cloud now, but they're running in different AWS services. ECS stores application, RDS stores the database
+## Dev Log 09/06 
+- backend app AND database are in the cloud now, but they're running in different AWS services. ECS stores application, RDS stores the database
 
 [![Watch the demo](demo.gif)](https://github.com/user-attachments/assets/2f94b919-ddf2-49db-9c9b-61550671baeb)
 
