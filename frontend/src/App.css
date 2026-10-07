@@ -224,10 +224,15 @@
 
 .today-card-header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 30px;
-  margin-bottom: 24px;
+  cursor: pointer;
+}
+
+.today-card-header-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
 }
 
 .today-card-header h2 {
@@ -278,4 +283,46 @@
 .today-belt input:focus {
   outline: none;
   border-color: #9ca3af;
+}
+
+.debrief-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.debrief-control .detail-label {
+  white-space: nowrap;
+}
+
+.collapse-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 24px;
+
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.today-card-belt {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Completed card */
+.today-details-card.debrief-complete {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.today-details-card.debrief-complete .today-card-content {
+  opacity: 0.55;
+}
+
+.today-details-card.debrief-complete .today-card-header h2,
+.today-details-card.debrief-complete .today-card-header p,
+.today-details-card.debrief-complete .today-card-belt {
+  color: #9ca3af;
 }

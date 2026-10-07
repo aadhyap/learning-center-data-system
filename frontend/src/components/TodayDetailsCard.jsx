@@ -7,7 +7,8 @@ function TodayDetailsCard({ student }) {
     belt: student.belt || "",
     notes: student.notes || "",
     achievements: student.achievements || "",
-    next_session: student.next_session || ""
+    next_session: student.next_session || "",
+    debrief_completed: student.debrief_completed || false
   });
 
   function handleChange(event) {
@@ -19,29 +20,59 @@ function TodayDetailsCard({ student }) {
     });
   }
 
-  return (
-    <div className="today-details-card">
+  function toggleDebrief(event) {
+    // Prevent this click from also opening/closing the card
+    event.stopPropagation();
 
-      <div
+    setFormData({
+      ...formData,
+      debrief_completed: !formData.debrief_completed
+    });
+  }
+
+  return (
+        <div
+        className={`today-details-card ${
+                formData.debrief_completed ? "debrief-complete" : ""
+        }`}
+        >
+
+        <div
         className="today-card-header"
         onClick={() => setIsOpen(!isOpen)}
-      >
+        >
         <div>
-          <h2>
-            {student.first_name} {student.last_name}
-          </h2>
+        <h2>
+        {student.first_name} {student.last_name}
+        </h2>
 
-          <p>{student.program}</p>
+        <p>{student.program}</p>
         </div>
 
         <div className="today-card-header-right">
 
+        <div className="debrief-control">
+        <span className="detail-label">
+                Debrief Complete
+        </span>
 
-          <span className="collapse-arrow">
-            {isOpen ? "▲" : "▼"}
-          </span>
+        <button
+                className={`checkin-toggle ${
+                formData.debrief_completed ? "active" : ""
+                }`}
+                onClick={toggleDebrief}
+                type="button"
+        >
+                <span className="toggle-circle"></span>
+        </button>
         </div>
-      </div>
+
+        <span className="collapse-arrow">
+        {isOpen ? "▲" : "▼"}
+        </span>
+
+        </div>
+        </div>
 
       {isOpen && (
         <div className="today-card-content">
