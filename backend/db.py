@@ -228,12 +228,16 @@ def get_students_today():
                     students.program,
                     students.belt,
                     sessions.session_id,
-                    sessions.session_date
-                FROM sessions
-                JOIN students
-                    ON sessions.student_id = students.student_id
+                    sessions.session_date,
+                    sessions.next_session,
+                    sessions.achievements,
+                    sessions.notes,
+                    sessions.debrief_completed
+                FROM students
+                JOIN sessions
+                    ON students.student_id = sessions.student_id
                 WHERE sessions.session_date::date = CURRENT_DATE
-                ORDER BY sessions.session_date;
+                ORDER BY sessions.session_date
             """)
 
             return cur.fetchall()

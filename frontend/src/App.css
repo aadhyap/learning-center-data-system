@@ -310,6 +310,15 @@
   font-size: 14px;
   color: #6b7280;
 }
+.today-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.today-card-actions .back-button {
+  margin-bottom: 0;
+}
 
 /* Completed card */
 .today-details-card.debrief-complete {

@@ -3,12 +3,33 @@ import { useEffect, useState } from "react";
 import {
   getTodayStudents,
   checkInStudent,
-  deleteSession
+  deleteSession,
+  updateSession
 } from "../api/api";
 
 
 export function useTodayStudents() {
   const [todayStudents, setTodayStudents] = useState([]);
+
+  async function saveSession(sessionId, sessionData) {
+  try {
+    await updateSession(sessionId, sessionData);
+
+    setTodayStudents((currentStudents) =>
+      currentStudents.map((student) =>
+        student.session_id === sessionId
+          ? { ...student, ...sessionData }
+          : student
+      )
+    );
+
+    return true;
+
+  } catch (error) {
+    console.error("Error updating session:", error);
+    return false;
+  }
+}
 
   async function loadTodayStudents() {
     try {
@@ -93,6 +114,7 @@ export function useTodayStudents() {
   todayStudents,
   loadTodayStudents,
   checkIn,
-  checkOut
+  checkOut,
+  saveSession
 };
 }

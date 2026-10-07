@@ -44,7 +44,6 @@ function StudentList({
 
       <div className="student-list">
         {students.map((student) => {
-          console.log(student.first_name, student.last_session);
 
           const todaySession = todayStudents.find(
             (todayStudent) =>

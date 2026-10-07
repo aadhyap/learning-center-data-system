@@ -80,3 +80,22 @@ export async function updateStudent(studentId, studentData) {
 
   return response.json();
 }
+
+export async function updateSession(sessionId, sessionData) {
+  const response = await fetch(
+    `${API_URL}/sessions/${sessionId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(sessionData)
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to update session");
+  }
+
+  return response.json();
+}

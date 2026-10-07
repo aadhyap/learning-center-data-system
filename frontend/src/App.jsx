@@ -22,10 +22,11 @@ function App() {
 );
 
   const {
-    todayStudents,
-    checkIn,
-    checkOut
-  } = useTodayStudents();
+  todayStudents,
+  checkIn,
+  checkOut,
+  saveSession
+} = useTodayStudents();
 
 
   const filteredStudents = students.filter((student) => {
@@ -95,6 +96,7 @@ function App() {
 
         <TodayStudents
           todayStudents={todayStudents}
+          onSaveSession={saveSession}
           onBack={() => {
             setSelectedStudentId(null);
             setPage("students");

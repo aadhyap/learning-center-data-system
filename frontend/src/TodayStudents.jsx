@@ -2,6 +2,7 @@ import TodayDetailsCard from "./components/TodayDetailsCard";
 
 function TodayStudents({
   todayStudents,
+  onSaveSession,
   onBack
 }) {
   const today = new Date();
@@ -30,8 +31,9 @@ function TodayStudents({
         ) : (
           todayStudents.map((student) => (
             <TodayDetailsCard
-              key={student.session_id}
-              student={student}
+                key={student.session_id}
+                student={student}
+                onSave={onSaveSession}
             />
           ))
         )}

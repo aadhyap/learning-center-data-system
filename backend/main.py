@@ -163,7 +163,6 @@ def student_history(student_id: int):
 #Get Students Today
 @app.get("/students/today")
 def students_today():
-
     students = get_students_today()
 
     return [
@@ -174,7 +173,11 @@ def students_today():
             "program": student[3],
             "belt": student[4],
             "session_id": student[5],
-            "session_date": student[6]
+            "session_date": student[6],
+            "next_session": student[7],
+            "achievements": student[8],
+            "notes": student[9],
+            "debrief_completed": student[10]
         }
         for student in students
     ]

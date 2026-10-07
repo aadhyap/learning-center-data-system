@@ -1,6 +1,9 @@
 import { useState } from "react";
 
-function TodayDetailsCard({ student }) {
+function TodayDetailsCard({
+  student,
+  onSave
+}) {
   const [isOpen, setIsOpen] = useState(true);
 
   const [formData, setFormData] = useState({
@@ -21,7 +24,7 @@ function TodayDetailsCard({ student }) {
   }
 
   function toggleDebrief(event) {
-    // Prevent this click from also opening/closing the card
+    // Don't open/close the card when clicking the toggle
     event.stopPropagation();
 
     setFormData({
@@ -30,49 +33,67 @@ function TodayDetailsCard({ student }) {
     });
   }
 
-  return (
-        <div
-        className={`today-details-card ${
-                formData.debrief_completed ? "debrief-complete" : ""
-        }`}
-        >
+  async function handleSave() {
+    const sessionData = {
+      notes: formData.notes,
+      achievements: formData.achievements,
+      next_session: formData.next_session,
+      debrief_completed: formData.debrief_completed
+    };
 
-        <div
+    const success = await onSave(
+      student.session_id,
+      sessionData
+    );
+
+    if (success) {
+      console.log("Session saved!");
+    }
+  }
+
+  return (
+    <div
+      className={`today-details-card ${
+        formData.debrief_completed ? "debrief-complete" : ""
+      }`}
+    >
+
+      <div
         className="today-card-header"
         onClick={() => setIsOpen(!isOpen)}
-        >
+      >
         <div>
-        <h2>
-        {student.first_name} {student.last_name}
-        </h2>
+          <h2>
+            {student.first_name} {student.last_name}
+          </h2>
 
-        <p>{student.program}</p>
+          <p>{student.program}</p>
         </div>
 
         <div className="today-card-header-right">
 
-        <div className="debrief-control">
-        <span className="detail-label">
-                Debrief Complete
-        </span>
+          <div className="debrief-control">
+            <span className="detail-label">
+              Debrief Complete
+            </span>
 
-        <button
-                className={`checkin-toggle ${
+            <button
+              className={`checkin-toggle ${
                 formData.debrief_completed ? "active" : ""
-                }`}
-                onClick={toggleDebrief}
-                type="button"
-        >
-                <span className="toggle-circle"></span>
-        </button>
-        </div>
+              }`}
+              onClick={toggleDebrief}
+              type="button"
+            >
+              <span className="toggle-circle"></span>
+            </button>
+          </div>
 
-        <span className="collapse-arrow">
-        {isOpen ? "▲" : "▼"}
-        </span>
+          <span className="collapse-arrow">
+            {isOpen ? "▲" : "▼"}
+          </span>
 
         </div>
-        </div>
+      </div>
 
       {isOpen && (
         <div className="today-card-content">
@@ -126,6 +147,16 @@ function TodayDetailsCard({ student }) {
               onChange={handleChange}
               placeholder="What should they work on next?"
             />
+          </div>
+
+          <div className="today-card-actions">
+            <button
+              className="back-button"
+              onClick={handleSave}
+              type="button"
+            >
+              Update
+            </button>
           </div>
 
         </div>
