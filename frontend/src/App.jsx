@@ -9,13 +9,17 @@ import TodayStudents from "./TodayStudents";
 
 function App() {
   const [search, setSearch] = useState("");
-  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [page, setPage] = useState("students");
 
   const {
     students,
     saveStudent
   } = useStudents();
+
+  const selectedStudent = students.find(
+  (student) => student.student_id === selectedStudentId
+);
 
   const {
     todayStudents,
@@ -73,7 +77,7 @@ function App() {
         <button
           className="today-nav"
           onClick={() => {
-            setSelectedStudent(null);
+            setSelectedStudentId(null);
             setPage("today");
           }}
         >
@@ -91,7 +95,7 @@ function App() {
 
         <TodayStudents
           onBack={() => {
-            setSelectedStudent(null);
+            setSelectedStudentId(null);
             setPage("students");
           }}
         />
@@ -101,7 +105,7 @@ function App() {
         <StudentProfile
           student={selectedStudent}
           onSave={saveStudent}
-          onBack={() => setSelectedStudent(null)}
+          onBack={() => setSelectedStudentId(null)}
         />
 
       ) : (
@@ -111,9 +115,10 @@ function App() {
           todayStudents={todayStudents}
           onCheckIn={checkIn}
           onCheckOut={checkOut}
-          onSelectStudent={setSelectedStudent}
+          onSelectStudent={(student) =>
+            setSelectedStudentId(student.student_id)
+          }
         />
-
       )}
 
     </main>
