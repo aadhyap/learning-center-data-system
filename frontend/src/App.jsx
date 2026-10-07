@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useStudents } from "./queries/useStudents";
+import { useTodayStudents } from "./queries/useTodayStudents";
 import "./App.css";
 
 import StudentList from "./components/StudentList";
@@ -6,42 +8,18 @@ import StudentProfile from "./components/StudentProfile";
 import TodayStudents from "./TodayStudents";
 
 function App() {
-  const [students, setStudents] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [page, setPage] = useState("students");
-  const [todayStudents, setTodayStudents] = useState([]);
 
-  function loadTodayStudents() {
-  fetch("http://127.0.0.1:8000/students/today")
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Today's students:", data);
-      setTodayStudents(data);
-    })
-    .catch((error) => {
-      console.error("Error loading today's students:", error);
-    });
-}
+  const { students } = useStudents();
 
-  useEffect(() => {
-  // Load all students
-  fetch("http://127.0.0.1:8000/students")
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-      setStudents(data);
-    })
-    .catch((error) => {
-      console.error("Error loading students:", error);
-    });
+  const {
+    todayStudents,
+    checkIn,
+    checkOut
+  } = useTodayStudents();
 
-  // Load students who are checked in today
-  loadTodayStudents();
-
-}, []);
-
-  
 
   const filteredStudents = students.filter((student) => {
     const fullName =
@@ -127,7 +105,8 @@ function App() {
         <StudentList
           students={filteredStudents}
           todayStudents={todayStudents}
-          onCheckIn={loadTodayStudents}
+          onCheckIn={checkIn}
+          onCheckOut={checkOut}
           onSelectStudent={setSelectedStudent}
         />
 

@@ -1,8 +1,9 @@
 import SessionHistory from "./SessionHistory";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useStudentHistory } from "../queries/useStudentHistory";
 
 function StudentProfile({ student, onBack }) {
-  const [sessions, setSessions] = useState([]);
+  const { sessions } = useStudentHistory(student.student_id);
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -23,17 +24,7 @@ function StudentProfile({ student, onBack }) {
     });
   }
 
-  useEffect(() => {
-    fetch(`http://127.0.0.1:8000/students/${student.student_id}/history`)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Session history:", data);
-        setSessions(data);
-      })
-      .catch((error) => {
-        console.error("Error loading session history:", error);
-      });
-  }, [student.student_id]);
+
 
   return (
     <div className="student-profile">

@@ -26,49 +26,11 @@ function StudentList({
   students,
   todayStudents,
   onCheckIn,
+  onCheckOut,
   onSelectStudent
 }) {
 
-  async function checkInStudent(studentId) {
-  try {
-    const response = await fetch(
-      `http://127.0.0.1:8000/students/${studentId}/check-in`,
-      {
-        method: "POST"
-      }
-    );
 
-    if (!response.ok) {
-      throw new Error("Check-in failed");
-    }
-
-    onCheckIn();
-
-  } catch (error) {
-    console.error("Error checking in student:", error);
-  }
-}
-
-
-async function deleteSession(sessionId) {
-  try {
-    const response = await fetch(
-      `http://127.0.0.1:8000/sessions/${sessionId}`,
-      {
-        method: "DELETE"
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("Deleting session failed");
-    }
-
-    onCheckIn();
-
-  } catch (error) {
-    console.error("Error deleting session:", error);
-  }
-}
   return (
     <>
       <div className="page-header">
@@ -125,17 +87,20 @@ async function deleteSession(sessionId) {
                 <span className="detail-label">Check In</span>
 
                 <button
-                  className={`checkin-toggle ${isCheckedIn ? "active" : ""}`}
-                  onClick={() => {
-                    if (isCheckedIn) {
-                      deleteSession(todaySession.session_id);
-                    } else {
-                      checkInStudent(student.student_id);
-                    }
-                  }}
-                >
-                  <span className="toggle-circle"></span>
-                </button>
+                className={`checkin-toggle ${isCheckedIn ? "active" : ""}`}
+                onClick={() => {
+
+                  if (isCheckedIn) {
+                    console.log("calling checkout");
+                    onCheckOut(todaySession.session_id);
+                  } else {
+                    console.log("calling checkin");
+                    onCheckIn(student.student_id);
+                  }
+                }}
+              >
+                <span className="toggle-circle"></span>
+              </button>
               </div>
 
               <button
@@ -145,9 +110,7 @@ async function deleteSession(sessionId) {
                 View →
               </button>
 
-            </div>
-
-            
+            </div> 
           );
         })}
       </div>
