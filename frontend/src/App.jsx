@@ -3,11 +3,13 @@ import "./App.css";
 
 import StudentList from "./components/StudentList";
 import StudentProfile from "./components/StudentProfile";
+import TodayStudents from "./TodayStudents";
 
 function App() {
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [page, setPage] = useState("students");
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/students")
@@ -35,15 +37,18 @@ function App() {
   });
 
   return (
-    <div className="app">
+  <div className="app">
 
+    {/* SIDEBAR ONLY EXISTS ON STUDENTS PAGE */}
+    {page === "students" && (
       <aside className="sidebar">
-        <h2>Code Ninjas</h2>
+
+        <h2>Student Progress</h2>
 
         <input
           className="search"
           type="text"
-          placeholder="Search ninjas..."
+          placeholder="Search students..."
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
@@ -63,26 +68,53 @@ function App() {
         <label>
           <input type="checkbox" /> Godot
         </label>
+
+        <button
+          className="today-nav"
+          onClick={() => {
+            setSelectedStudent(null);
+            setPage("today");
+          }}
+        >
+          <span>Today's Students</span>
+          <span className="today-arrow">→</span>
+        </button>
+
       </aside>
+    )}
 
-      <main className="content">
 
-        {selectedStudent ? (
-          <StudentProfile
-            student={selectedStudent}
-            onBack={() => setSelectedStudent(null)}
-          />
-        ) : (
-          <StudentList
+    <main className="content">
+
+      {page === "today" ? (
+
+        <TodayStudents
+          onBack={() => {
+            setSelectedStudent(null);
+            setPage("students");
+          }}
+        />
+
+      ) : selectedStudent ? (
+
+        <StudentProfile
+          student={selectedStudent}
+          onBack={() => setSelectedStudent(null)}
+        />
+
+      ) : (
+
+        <StudentList
           students={filteredStudents}
           onSelectStudent={setSelectedStudent}
-          />
-        )}
+        />
 
-      </main>
+      )}
 
-    </div>
-  );
+    </main>
+
+  </div>
+);
 }
 
 export default App;

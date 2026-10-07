@@ -25,8 +25,54 @@ body {
 
 .sidebar {
   width: 260px;
+  min-height: 100vh;
   padding: 28px 22px;
+
   border-right: 1px solid #e5e7eb;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.today-nav {
+  margin-top: auto;
+
+  width: 100%;
+  padding: 12px 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  border-radius: 0;
+
+  background: transparent;
+  color: #374151;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+  text-align: left;
+}
+
+.today-nav:hover {
+  color: #111827;
+  background: #f9fafb;
+}
+
+.today-arrow {
+  font-size: 18px;
+  color: #9ca3af;
+  transition: transform 0.15s ease;
+}
+
+.today-nav:hover .today-arrow {
+  transform: translateX(3px);
+  color: #111827;
 }
 
 .sidebar h2 {
@@ -338,4 +384,24 @@ body {
 
 .profile-summary {
   margin-top: 24px;
+}
+
+
+
+/* Today Page */
+.today-page {
+  min-height: calc(100vh - 80px);
+
+  display: flex;
+  flex-direction: column;
+}
+
+.today-content {
+  flex: 1;
+}
+
+.today-back-button {
+  align-self: flex-end;
+  margin-top: 30px;
+  margin-bottom: 0;
 }
