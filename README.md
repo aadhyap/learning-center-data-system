@@ -21,11 +21,19 @@ Students can also be categorized using **programs** and **tags**, allowing instr
 
 <img width="566" height="696" alt="Screenshot 2026-10-05 at 11 31 25 AM" src="https://github.com/user-attachments/assets/6bc15f76-513b-419f-a4a9-ba8569ab3378" />
 
+## Dev Log 09/06
 
-## Dev Log 09/06 
-- backend app AND database are in the cloud now, but they're running in different AWS services. ECS stores application, RDS stores the database
+- Backend app AND database are in the cloud now, but they're running in different AWS services. ECS stores the application, RDS stores the database.
 
-[![Watch the demo](demo.gif)](https://github.com/user-attachments/assets/2f94b919-ddf2-49db-9c9b-61550671baeb)
+[![Watch the demo](demo-cloud.gif)](https://github.com/user-attachments/assets/2f94b919-ddf2-49db-9c9b-61550671baeb)
+
+
+## Dev Log 09/07
+
+- Working on frontend features utilizing FastAPI to pull, post, delete, and edit to PostgreSQL database.
+
+[![Watch the demo](demo-frontend.gif)](https://github.com/user-attachments/assets/a1b20a95-4f41-47bd-9ca5-b9b62e690210)
+
 
 
 ## Core Features
