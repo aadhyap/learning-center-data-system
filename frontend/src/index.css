@@ -1,7 +1,20 @@
+
+/* ========================================
+   GLOBAL
+======================================== */
+
 :root {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #1f2937;
   background: #ffffff;
+
+  --border: #e5e7eb;
+  --input-border: #d1d5db;
+  --text-muted: #6b7280;
+  --text-light: #9ca3af;
+  --hover-bg: #f9fafb;
+  --card-bg: #ffffff;
+  --radius: 8px;
 }
 
 * {
@@ -16,36 +29,162 @@ body {
   min-height: 100vh;
 }
 
+/* ========================================
+   REUSABLE COMPONENT STYLES
+======================================== */
+
+/* Cards */
+.student-card,
+.session-card,
+.today-student-card,
+.today-details-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card-bg);
+}
+
+/* Buttons */
+.back-button,
+.view-button,
+.page-header button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  background: white;
+  color: var(--text-muted);
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.back-button:hover,
+.view-button:hover {
+  background: var(--hover-bg);
+  color: #111827;
+}
+
+.back-button {
+  margin-bottom: 24px;
+}
+
+/* Primary button variant */
+.page-header button {
+  padding: 10px 16px;
+  border: none;
+  background: #111827;
+  color: white;
+}
+
+/* Form fields */
+.search,
+.profile-card input,
+.profile-card textarea,
+.profile-card select,
+.today-belt input,
+.today-field textarea {
+  width: 100%;
+  padding: 10px 12px;
+
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius);
+
+  background: white;
+  color: #1f2937;
+
+  font-family: inherit;
+  font-size: 15px;
+}
+
+.search:focus,
+.profile-card input:focus,
+.profile-card textarea:focus,
+.profile-card select:focus,
+.today-belt input:focus,
+.today-field textarea:focus {
+  outline: none;
+  border-color: var(--text-light);
+}
+
+/* Labels */
+.detail-label {
+  color: var(--text-light);
+  font-size: 12px;
+}
+
+/* Muted text */
+.student-info p,
+.today-student-card p,
+.today-card-header p,
+.today-card-belt,
+.today-program,
+.today-belt-label {
+  color: var(--text-muted);
+}
+
+/* ========================================
+   APP LAYOUT
+======================================== */
+
 .app {
   display: flex;
   min-height: 100vh;
 }
 
-/* LEFT SIDE */
+.content {
+  flex: 1;
+  padding: 40px;
+}
+
+/* ========================================
+   SIDEBAR
+======================================== */
 
 .sidebar {
+  display: flex;
+  flex-direction: column;
+
   width: 260px;
   min-height: 100vh;
   padding: 28px 22px;
 
-  border-right: 1px solid #e5e7eb;
-
-  display: flex;
-  flex-direction: column;
+  border-right: 1px solid var(--border);
 }
 
+.sidebar h2 {
+  margin-top: 0;
+}
+
+.sidebar label {
+  display: block;
+  margin: 10px 0;
+}
+
+.search {
+  margin: 20px 0 30px;
+}
+
+/* Today navigation */
 .today-nav {
-  margin-top: auto;
-
-  width: 100%;
-  padding: 12px 4px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
 
+  width: 100%;
+  margin-top: auto;
+  padding: 12px 4px;
+
   border: none;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border);
   border-radius: 0;
 
   background: transparent;
@@ -61,12 +200,12 @@ body {
 
 .today-nav:hover {
   color: #111827;
-  background: #f9fafb;
+  background: var(--hover-bg);
 }
 
 .today-arrow {
   font-size: 18px;
-  color: #9ca3af;
+  color: var(--text-light);
   transition: transform 0.15s ease;
 }
 
@@ -75,35 +214,14 @@ body {
   color: #111827;
 }
 
-.sidebar h2 {
-  margin-top: 0;
-}
-
-.search {
-  width: 100%;
-  padding: 10px 12px;
-  margin: 20px 0 30px;
-
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-}
-
-.sidebar label {
-  display: block;
-  margin: 10px 0;
-}
-
-/* MAIN AREA */
-
-.content {
-  flex: 1;
-  padding: 40px;
-}
+/* ========================================
+   PAGE HEADER
+======================================== */
 
 .page-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 }
 
 .page-header h1 {
@@ -113,21 +231,12 @@ body {
 
 .page-header p {
   margin-top: 6px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
-.page-header button {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-
-  background: #111827;
-  color: white;
-
-  cursor: pointer;
-}
-
-/* STUDENT LIST */
+/* ========================================
+   STUDENT LIST
+======================================== */
 
 .student-list {
   margin-top: 36px;
@@ -137,25 +246,18 @@ body {
   display: flex;
   align-items: center;
   gap: 24px;
-
   padding: 20px;
-
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-
-  background: white;
 }
 
 .student-avatar {
-  width: 48px;
-  height: 48px;
-
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border-radius: 10px;
+  width: 48px;
+  height: 48px;
 
+  border-radius: 10px;
   background: #f3f4f6;
   font-weight: 600;
 }
@@ -171,126 +273,33 @@ body {
 
 .student-info p {
   margin: 4px 0 0;
-  color: #9ca3af;
   font-size: 14px;
 }
 
 .student-detail {
-  min-width: 120px;
-
   display: flex;
   flex-direction: column;
   gap: 3px;
+  min-width: 120px;
 }
 
-.detail-label {
-  color: #9ca3af;
-  font-size: 12px;
-}
+/* ========================================
+   CHECK-IN TOGGLE
+======================================== */
 
-
-/*Session*/
-.session-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.session-card {
-  display: grid;
-
-  grid-template-columns: 140px 2fr 1fr;
-  grid-template-areas:
-    "date notes next"
-    ". achievements achievements";
-
-  column-gap: 32px;
-  row-gap: 14px;
-
-  padding: 18px 22px;
-
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-
-  background: white;
-}
-
-.session-date {
-  grid-area: date;
-
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.session-notes {
-  grid-area: notes;
-}
-
-.session-next {
-  grid-area: next;
-}
-
-.session-achievements {
-  grid-area: achievements;
-}
-
-.session-detail p {
-  margin: 4px 0 0;
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-
-/* Buttons */
-/* STUDENT PROFILE */
-
-.back-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-
-  padding: 8px 12px;
-  margin-bottom: 24px;
-
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-
-  background: white;
-  color: #6b7280;
-
-  font-size: 14px;
-  font-weight: 500;
-
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.back-button:hover {
-  background: #f9fafb;
-  color: #111827;
-}
-.view-button {
-  padding: 8px 12px;
-
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-
-  background: white;
-  cursor: pointer;
-}
-
-
-
-
-
-.checkin-control {
+.checkin-control,
+.debrief-control {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.checkin-control {
   min-width: 180px;
 }
 
-.checkin-control .detail-label {
+.checkin-control .detail-label,
+.debrief-control .detail-label {
   white-space: nowrap;
 }
 
@@ -330,32 +339,9 @@ body {
   transform: translateX(20px);
 }
 
-/* Summar */
-
-/* PROFILE EDIT FIELDS */
-
-.profile-card input,
-.profile-card textarea {
-  width: 100%;
-  padding: 10px 12px;
-
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-
-  font-family: inherit;
-  font-size: 15px;
-  color: #1f2937;
-
-  background: white;
-}
-
-.profile-card input:focus,
-.profile-card textarea:focus {
-  outline: none;
-  border-color: #9ca3af;
-}
-
-/* FIRST + LAST NAME */
+/* ========================================
+   STUDENT PROFILE
+======================================== */
 
 .name-inputs {
   display: flex;
@@ -367,41 +353,64 @@ body {
   min-width: 0;
 }
 
-/* PROGRAM + BELT */
-
 .profile-details > div {
   min-width: 220px;
-}
-
-/* SUMMARY */
-
-.profile-summary textarea {
-  width: 100%;
-  min-height: 130px;
-  resize: vertical;
-  line-height: 1.5;
 }
 
 .profile-summary {
   margin-top: 24px;
 }
 
+.profile-summary textarea {
+  min-height: 130px;
+  resize: vertical;
+  line-height: 1.5;
+}
 
+/* ========================================
+   SESSION HISTORY
+======================================== */
 
-/* Today Page */
-.today-page {
-  min-height: calc(100vh - 80px);
-
+.session-list {
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 
-.today-content {
-  flex: 1;
+.session-card {
+  display: grid;
+
+  grid-template-columns: 140px 2fr 1fr;
+  grid-template-areas:
+    "date notes next"
+    ". achievements achievements";
+
+  column-gap: 32px;
+  row-gap: 14px;
+
+  padding: 18px 22px;
 }
 
-.today-back-button {
-  align-self: flex-end;
-  margin-top: 30px;
-  margin-bottom: 0;
+.session-date {
+  grid-area: date;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.session-notes {
+  grid-area: notes;
+}
+
+.session-next {
+  grid-area: next;
+}
+
+.session-achievements {
+  grid-area: achievements;
+}
+
+.session-detail p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.4;
 }
