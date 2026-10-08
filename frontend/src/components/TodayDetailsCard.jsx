@@ -72,7 +72,7 @@ function TodayDetailsCard({
                 </span>
 
                 <span className="today-belt-label">
-                {student.belt} Belt {student.belt_level}
+                 Belt: {student.belt}
                 </span>
         </div>
 
