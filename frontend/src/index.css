@@ -414,3 +414,27 @@ body {
   font-size: 14px;
   line-height: 1.4;
 }
+
+
+.profile-tags {
+  margin-top: 16px;
+}
+
+.tag-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.tag-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  text-transform: capitalize;
+}
+
+.tag-option input {
+  width: auto;
+}

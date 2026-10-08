@@ -1,11 +1,13 @@
 import TodayDetailsCard from "./components/TodayDetailsCard";
 
+
 function TodayStudents({
   todayStudents,
   onSaveSession,
   onBack
 }) {
   const today = new Date();
+  
 
   const formattedDate = today.toLocaleDateString("en-US", {
     weekday: "long",

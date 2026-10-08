@@ -22,3 +22,19 @@ CREATE TABLE sessions (
     notes TEXT,
     debrief_completed BOOLEAN NOT NULL DEFAULT FALSE
 );
+
+CREATE TABLE session_tags (
+    tag_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    session_id INTEGER NOT NULL
+        REFERENCES sessions(session_id)
+        ON DELETE CASCADE,
+    tag_name VARCHAR(50) NOT NULL
+        CHECK (tag_name IN (
+            'coming_from_break',
+            'needs_attention',
+            'easily_distracted'
+        )),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    expires_at TIMESTAMPTZ,
+    resolved_at TIMESTAMPTZ
+);

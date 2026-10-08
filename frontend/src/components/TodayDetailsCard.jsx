@@ -1,9 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getStudentTags } from "../api/api";
+import StudentTags from "./StudentTags";
+import { useStudentTags } from "../queries/useStudentTags";
 
 function TodayDetailsCard({
   student,
   onSave
 }) {
+
+const { tags, loadTags } = useStudentTags(student.student_id);
   const [isOpen, setIsOpen] = useState(true);
 
   const [formData, setFormData] = useState({
@@ -74,6 +79,8 @@ function TodayDetailsCard({
                 <span className="today-belt-label">
                  Belt: {student.belt}
                 </span>
+
+                <StudentTags tags={tags} />
 
                 
 

@@ -103,6 +103,38 @@ def add_student(
     return student_id
 
 '''
+Add session tags
+'''
+def add_session_tag(session_id, tag_name):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO session_tags (
+                    session_id,
+                    tag_name,
+                    expires_at
+                )
+                SELECT
+                    %s,
+                    %s,
+                    CASE
+                        WHEN %s = 'coming_from_break'
+                        THEN (
+                            date_trunc('day', session_date)
+                            + INTERVAL '1 day'
+                        )
+                        ELSE NULL
+                    END
+                FROM sessions
+                WHERE session_id = %s
+                ON CONFLICT (session_id, tag_name) DO NOTHING
+                RETURNING tag_id
+            """, (session_id, tag_name, tag_name, session_id))
+
+            result = cur.fetchone()
+            return result[0] if result else None
+
+'''
 Can Edit Student, can change any of its parameters 
 '''
 def edit_student(
@@ -269,6 +301,31 @@ def get_students_today():
 
             return cur.fetchall()
 
+'''get active tags'''
+def get_active_student_tags(student_id):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT
+                    session_tags.tag_id,
+                    session_tags.tag_name,
+                    session_tags.session_id,
+                    session_tags.created_at,
+                    session_tags.expires_at
+                FROM session_tags
+                JOIN sessions
+                    ON session_tags.session_id = sessions.session_id
+                WHERE sessions.student_id = %s
+                  AND (
+                      session_tags.expires_at IS NULL
+                      OR session_tags.expires_at > NOW()
+                  )
+                ORDER BY session_tags.created_at DESC
+            """, (student_id,))
+
+            columns = [desc[0] for desc in cur.description]
+            return [dict(zip(columns, row)) for row in cur.fetchall()]
+
 ''' Delete '''
 def delete_session(session_id):
     with get_connection() as conn:
@@ -280,3 +337,19 @@ def delete_session(session_id):
                 """,
                 (session_id,)
             )
+
+
+def expire_session_tag(tag_id):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE session_tags
+                SET expires_at = NOW()
+                WHERE tag_id = %s
+                  AND (expires_at IS NULL OR expires_at > NOW())
+                RETURNING tag_id
+            """, (tag_id,))
+
+            result = cur.fetchone()
+            return result[0] if result else None
+

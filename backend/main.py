@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from fastapi import HTTPException
 
 from db import (
     search_students,
@@ -11,7 +12,10 @@ from db import (
     get_student_history,
     get_all_students,
     edit_session,
-    delete_session
+    delete_session,
+    get_active_student_tags,
+    add_session_tag,
+    expire_session_tag,
 )
 
 app = FastAPI()
@@ -52,6 +56,9 @@ class SessionUpdate(BaseModel):
     achievements: str | None = None
     notes: str | None = None
     debrief_completed: bool = False
+
+class TagCreate(BaseModel):
+    tag_name: str
 
 @app.get("/")
 def root():
@@ -102,6 +109,35 @@ def check_in(student_id: int):
         "session_id": session_id
     }
 
+#tags
+@app.post("/sessions/{session_id}/tags")
+def create_session_tag(session_id: int, tag: TagCreate):
+    tag_id = add_session_tag(session_id, tag.tag_name)
+
+    return {
+        "tag_id": tag_id,
+        "session_id": session_id,
+        "tag_name": tag.tag_name
+    }
+
+@app.get("/students/{student_id}/tags")
+def student_active_tags(student_id: int):
+    return get_active_student_tags(student_id)
+
+@app.patch("/tags/{tag_id}/expire")
+def expire_tag(tag_id: int):
+    expired_id = expire_session_tag(tag_id)
+
+    if expired_id is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Tag not found or already expired"
+        )
+
+    return {
+        "tag_id": expired_id,
+        "expired": True
+    }
 #Update Student 
 @app.put("/students/{student_id}")
 def update_student(student_id: int, student: StudentUpdate):

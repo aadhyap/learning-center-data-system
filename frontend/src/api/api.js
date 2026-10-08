@@ -99,3 +99,47 @@ export async function updateSession(sessionId, sessionData) {
 
   return response.json();
 }
+
+export async function getStudentTags(studentId) {
+  const response = await fetch(
+    `${API_URL}/students/${studentId}/tags`
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to load student tags");
+  }
+
+  return response.json();
+}
+
+export async function addSessionTag(sessionId, tagName) {
+  const response = await fetch(
+    `${API_URL}/sessions/${sessionId}/tags`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ tag_name: tagName }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to add tag");
+  }
+
+  return response.json();
+}
+
+export async function expireSessionTag(tagId) {
+  const response = await fetch(
+    `${API_URL}/tags/${tagId}/expire`,
+    { method: "PATCH" }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to remove tag");
+  }
+
+  return response.json();
+}
