@@ -7,7 +7,6 @@ CREATE TABLE students (
     email VARCHAR(100),
     program VARCHAR(50),
     belt VARCHAR(50),
-    belt_level INTEGER,
     debrief_method VARCHAR(20)
         CHECK (debrief_method IN ('in_person', 'email')),
     summary TEXT
@@ -18,7 +17,6 @@ CREATE TABLE sessions (
     student_id INTEGER NOT NULL REFERENCES students(student_id),
     session_date TIMESTAMPTZ NOT NULL,
     belt VARCHAR(50),
-    belt_level INTEGER,
     next_session TEXT,
     achievements TEXT,
     notes TEXT,

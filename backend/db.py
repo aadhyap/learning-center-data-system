@@ -180,14 +180,12 @@ def check_in_student(student_id):
                 INSERT INTO sessions (
                     student_id,
                     session_date,
-                    belt,
-                    belt_level
+                    belt
                 )
                 SELECT
                     student_id,
                     NOW(),
-                    belt,
-                    belt_level
+                    belt
                 FROM students
                 WHERE student_id = %s
                 ON CONFLICT DO NOTHING
@@ -244,8 +242,9 @@ def get_students_today():
                     students.first_name,
                     students.last_name,
                     students.program,
+                    students.debrief_method,
+                    students.email,
                     sessions.belt,
-                    sessions.belt_level,
                     sessions.session_id,
                     sessions.session_date,
                     sessions.next_session,

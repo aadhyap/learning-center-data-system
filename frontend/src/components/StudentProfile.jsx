@@ -16,7 +16,8 @@ function StudentProfile({
     last_name: student.last_name,
     program: student.program || "",
     belt: student.belt || "",
-    summary: student.summary || ""
+    summary: student.summary || "",
+    debrief_method: student.debrief_method || ""
   });
 
   function handleChange(event) {
@@ -101,6 +102,7 @@ function StudentProfile({
             {isEditing ? "Cancel" : "Edit"}
           </button>
 
+
         </div>
 
 
@@ -137,6 +139,33 @@ function StudentProfile({
 
         </div>
 
+        <div className="profile-field">
+   
+   <label className="detail-label">Debrief Method</label>
+
+      {isEditing ? (
+        <select
+          name="debrief_method"
+          value={formData.debrief_method}
+          onChange={handleChange}
+        >
+          <option value="">Not Set</option>
+          <option value="in_person">In Person</option>
+          <option value="email">Email</option>
+        </select>
+      ) : (
+        <p>
+          {student.debrief_method === "in_person"
+            ? "In Person"
+            : student.debrief_method === "email"
+            ? "Email"
+            : "Not Set"}
+        </p>
+      )}
+    </div>
+
+        
+
 
         <div className="profile-summary">
           <span className="detail-label">Summary</span>
@@ -152,6 +181,8 @@ function StudentProfile({
           )}
 
         </div>
+
+
 
 
         {isEditing && (

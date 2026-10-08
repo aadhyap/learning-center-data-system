@@ -170,18 +170,19 @@ def students_today():
 
     return [
         {
-            "student_id": student[0],
-            "first_name": student[1],
-            "last_name": student[2],
-            "program": student[3],
-            "belt": student[4],
-            "belt_level": student[5],
-            "session_id": student[6],
-            "session_date": student[7],
-            "next_session": student[8],
-            "achievements": student[9],
-            "notes": student[10],
-            "debrief_completed": student[11]
+        "student_id": student[0],
+        "first_name": student[1],
+        "last_name": student[2],
+        "program": student[3],
+        "debrief_method": student[4],
+        "email": student[5],
+        "belt": student[6],
+        "session_id": student[7],
+        "session_date": student[8],
+        "next_session": student[9],
+        "achievements": student[10],
+        "notes": student[11],
+        "debrief_completed": student[12]
         }
         for student in students
     ]

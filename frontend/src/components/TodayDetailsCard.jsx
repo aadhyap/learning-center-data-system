@@ -74,11 +74,20 @@ function TodayDetailsCard({
                 <span className="today-belt-label">
                  Belt: {student.belt}
                 </span>
+
+                
+
+                <span className="today-belt-label">
+                 {student.email}
+                </span>
         </div>
 
         <div className="today-card-header-right">
 
           <div className="debrief-control">
+            <span className="today-belt-label">
+                 {student.debrief_method}
+                </span>
             <span className="detail-label">
               Debrief Complete
             </span>
