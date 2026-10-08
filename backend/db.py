@@ -180,15 +180,24 @@ def check_in_student(student_id):
                 INSERT INTO sessions (
                     student_id,
                     session_date,
-                    belt
+                    belt,
+                    notes
                 )
                 SELECT
-                    student_id,
+                    students.student_id,
                     NOW(),
-                    belt
+                    students.belt,
+                     (
+                        SELECT previous.next_session
+                        FROM sessions AS previous
+                        WHERE previous.student_id = students.student_id
+                          AND previous.session_date < CURRENT_DATE
+                        ORDER BY previous.session_date DESC,
+                                 previous.session_id DESC
+                        LIMIT 1
+                    )
                 FROM students
-                WHERE student_id = %s
-                ON CONFLICT DO NOTHING
+                WHERE students.student_id = %s
                 RETURNING session_id
                 """,
                 (student_id,)
