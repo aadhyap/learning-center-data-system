@@ -300,7 +300,7 @@ function StudentProfile({ student, onBack, onSave }) {
               <div className="selected-tags">
                 {selectedTags.map(tagName => (
                   <span
-                    className="student-tag"
+                    className={`student-tag tag-${tagName}`}
                     key={tagName}
                   >
                     {tagName.replaceAll("_", " ")}

@@ -184,3 +184,33 @@
   font-size: 12px;
   text-transform: capitalize;
 }
+
+
+/* Shared tag styling */
+.student-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Red */
+.tag-needs_attention {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* Amber */
+.tag-easily_distracted {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* Blue */
+.tag-coming_from_break {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
