@@ -6,15 +6,18 @@ import "./App.css";
 import StudentList from "./components/StudentList";
 import StudentProfile from "./components/StudentProfile";
 import TodayStudents from "./TodayStudents";
+import AddStudent from "./components/AddStudent";
 
 function App() {
   const [search, setSearch] = useState("");
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [page, setPage] = useState("students");
+  const [showAddStudent, setShowAddStudent] = useState(false);
 
   const {
     students,
-    saveStudent
+    saveStudent,
+    createStudent
   } = useStudents();
 
   const selectedStudent = students.find(
@@ -121,10 +124,28 @@ function App() {
           onSelectStudent={(student) =>
             setSelectedStudentId(student.student_id)
           }
+          onAddStudent={() => setShowAddStudent(true)}
         />
       )}
 
     </main>
+
+    {page === "students" && !selectedStudent && showAddStudent && (
+  <div
+    className="modal-overlay"
+    onClick={() => setShowAddStudent(false)}
+  >
+    <div
+      className="modal-card"
+      onClick={(event) => event.stopPropagation()}
+    >
+      <AddStudent
+        onBack={() => setShowAddStudent(false)}
+        onCreate={createStudent}
+      />
+    </div>
+  </div>
+)}
 
   </div>
 );

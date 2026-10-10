@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 
 import {
   getStudents,
-  updateStudent
+  updateStudent,
+  addStudent,
+  addStudentTag
 } from "../api/api";
 
 export function useStudents() {
@@ -28,6 +30,28 @@ export function useStudents() {
   }
 }
 
+  async function createStudent(studentData, selectedTags = []) {
+    try {
+      // Create student in PostgreSQL through the API
+      const newStudent = await addStudent(studentData);
+
+      // Add optional tags to the newly created student
+      for (const tagName of selectedTags) {
+        await addStudentTag(newStudent.student_id, tagName);
+      }
+
+      // Refresh the student list
+      await loadStudents();
+
+      return true;
+
+    } catch (error) {
+      console.error("Error creating student:", error);
+      return false;
+    }
+  }
+
+
   async function loadStudents() {
     try {
       const data = await getStudents();
@@ -42,10 +66,14 @@ export function useStudents() {
   }, []);
 
   return {
-    students,
-    loadStudents,
-    saveStudent
-  };
+  students,
+  loadStudents,
+  saveStudent,
+  createStudent
+};
+  
 }
+
+
 
 

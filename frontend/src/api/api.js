@@ -20,6 +20,7 @@ export async function getTodayStudents() {
   return response.json();
 }
 
+
 export async function checkInStudent(studentId) {
   const response = await fetch(
     `${API_URL}/students/${studentId}/check-in`,
@@ -34,6 +35,25 @@ export async function checkInStudent(studentId) {
 
   return response.json();
 }
+
+
+export async function addStudent(studentData) {
+  const response = await fetch(`${API_URL}/students`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(studentData)
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => null);
+    throw new Error(error?.detail || "Failed to create student");
+  }
+
+  return response.json();
+}
+
 
 export async function deleteSession(sessionId) {
   const response = await fetch(

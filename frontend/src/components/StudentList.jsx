@@ -1,4 +1,3 @@
-
 import { useStudentTags } from "../queries/useStudentTags";
 import StudentTags from "./StudentTags";
 
@@ -103,7 +102,8 @@ function StudentList({
   todayStudents,
   onCheckIn,
   onCheckOut,
-  onSelectStudent
+  onSelectStudent,
+  onAddStudent
 }) {
   return (
     <>
@@ -113,7 +113,9 @@ function StudentList({
           <p>View and manage student progress</p>
         </div>
 
-        <button>+ Add Student</button>
+        <button onClick={onAddStudent}>
+          + Add Student
+        </button>
       </div>
 
       <div className="student-list">

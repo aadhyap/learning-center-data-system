@@ -169,24 +169,16 @@
   color: var(--text-light);
 }
 
+
+/* ========================================
+   Student Tags
+======================================== */
 .student-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.student-tag {
-  padding: 4px 10px;
-  border: 1px solid #e5e7eb;
-  border-radius: 999px;
-  background: #f3f4f6;
-  color: #374151;
-  font-size: 12px;
-  text-transform: capitalize;
-}
-
-
-/* Shared tag styling */
 .student-tag {
   display: inline-flex;
   align-items: center;
@@ -213,4 +205,148 @@
 .tag-coming_from_break {
   background-color: #dbeafe;
   color: #1e40af;
+}
+
+
+
+/* ========================================
+   Student List Add Student
+======================================== */
+
+
+/* ========================================
+   ADD STUDENT MODAL
+======================================== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.4);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+
+  padding: 30px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+/* Header */
+
+.add-student-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.add-student-header h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.modal-close {
+  border: none;
+  background: none;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+/* Form layout */
+
+.add-student-form .profile-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.add-student-form .profile-details > div,
+.add-student-form .profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.add-student-form .profile-field {
+  margin-bottom: 20px;
+}
+
+/* Shared labels and inputs */
+
+.add-student-form .detail-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.add-student-form input:not([type="checkbox"]),
+.add-student-form select,
+.add-student-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: white;
+  color: #1f2937;
+  font: inherit;
+}
+
+.add-student-form textarea {
+  min-height: 85px;
+  resize: vertical;
+}
+
+/* Tags */
+
+.add-student-form .selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.add-student-form .student-tag {
+  cursor: pointer;
+}
+
+.add-student-form .student-tag input {
+  margin: 0;
+}
+
+/* Submit button */
+
+.add-student-form button[type="submit"] {
+  display: block;
+  margin-left: auto;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.add-student-form button[type="submit"]:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 600px) {
+  .add-student-form .profile-details {
+    grid-template-columns: 1fr;
+  }
 }
