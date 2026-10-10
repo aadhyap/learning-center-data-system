@@ -356,29 +356,32 @@ def get_students_today():
             return cur.fetchall()
 
 '''get active tags'''
+
 def get_active_student_tags(student_id):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT
-                    session_tags.tag_id,
-                    session_tags.tag_name,
-                    session_tags.session_id,
-                    session_tags.created_at,
-                    session_tags.expires_at
-                FROM session_tags
-                JOIN sessions
-                    ON session_tags.session_id = sessions.session_id
-                WHERE sessions.student_id = %s
+                    tag_id,
+                    student_id,
+                    session_id,
+                    tag_name,
+                    expires_at
+                FROM tags
+                WHERE student_id = %s
                   AND (
-                      session_tags.expires_at IS NULL
-                      OR session_tags.expires_at > NOW()
+                      expires_at IS NULL
+                      OR expires_at > NOW()
                   )
-                ORDER BY session_tags.created_at DESC
+                ORDER BY tag_id DESC
             """, (student_id,))
 
             columns = [desc[0] for desc in cur.description]
-            return [dict(zip(columns, row)) for row in cur.fetchall()]
+            return [
+                dict(zip(columns, row))
+                for row in cur.fetchall()
+            ]
+
 
 ''' Delete '''
 def delete_session(session_id):
@@ -393,17 +396,37 @@ def delete_session(session_id):
             )
 
 
-def expire_session_tag(tag_id):
+
+def expire_tag(tag_id):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                UPDATE session_tags
-                SET expires_at = NOW()
+                SELECT session_id
+                FROM tags
                 WHERE tag_id = %s
                   AND (expires_at IS NULL OR expires_at > NOW())
-                RETURNING tag_id
+                FOR UPDATE
             """, (tag_id,))
 
             result = cur.fetchone()
-            return result[0] if result else None
+
+            if result is None:
+                return None
+
+            session_id = result[0]
+
+            if session_id is None:
+                cur.execute("""
+                    DELETE FROM tags
+                    WHERE tag_id = %s
+                """, (tag_id,))
+            else:
+                cur.execute("""
+                    UPDATE tags
+                    SET expires_at = NOW()
+                    WHERE tag_id = %s
+                """, (tag_id,))
+
+            return tag_id
+
 

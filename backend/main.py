@@ -14,8 +14,8 @@ from db import (
     edit_session,
     delete_session,
     get_active_student_tags,
-    add_session_tag,
-    expire_session_tag,
+    add_student_tag,
+    expire_tag
 )
 
 app = FastAPI()
@@ -110,23 +110,25 @@ def check_in(student_id: int):
     }
 
 #tags
-@app.post("/sessions/{session_id}/tags")
-def create_session_tag(session_id: int, tag: TagCreate):
-    tag_id = add_session_tag(session_id, tag.tag_name)
+
+@app.post("/students/{student_id}/tags")
+def create_student_tag(student_id: int, tag: TagCreate):
+    tag_id = add_student_tag(student_id, tag.tag_name)
 
     return {
         "tag_id": tag_id,
-        "session_id": session_id,
+        "student_id": student_id,
         "tag_name": tag.tag_name
     }
+
 
 @app.get("/students/{student_id}/tags")
 def student_active_tags(student_id: int):
     return get_active_student_tags(student_id)
 
 @app.patch("/tags/{tag_id}/expire")
-def expire_tag(tag_id: int):
-    expired_id = expire_session_tag(tag_id)
+def expire_student_tag(tag_id: int):
+    expired_id = expire_tag(tag_id)
 
     if expired_id is None:
         raise HTTPException(
@@ -138,6 +140,7 @@ def expire_tag(tag_id: int):
         "tag_id": expired_id,
         "expired": True
     }
+
 #Update Student 
 @app.put("/students/{student_id}")
 def update_student(student_id: int, student: StudentUpdate):
@@ -183,21 +186,8 @@ def all_students():
 #Get Students history
 @app.get("/students/{student_id}/history")
 def student_history(student_id: int):
+    return get_student_history(student_id)
 
-    sessions = get_student_history(student_id)
-
-    return [
-        {
-            "session_id": session[0],
-            "student_id": session[1],
-            "session_date": session[2],
-            "next_session": session[3],
-            "achievements": session[4],
-            "notes": session[5],
-            "debrief_completed": session[6]
-        }
-        for session in sessions
-    ]
 
 #Get Students Today
 @app.get("/students/today")
