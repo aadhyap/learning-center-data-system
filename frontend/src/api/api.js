@@ -112,24 +112,25 @@ export async function getStudentTags(studentId) {
   return response.json();
 }
 
-export async function addSessionTag(sessionId, tagName) {
-  const response = await fetch(
-    `${API_URL}/sessions/${sessionId}/tags`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ tag_name: tagName }),
-    }
-  );
+
+export async function addStudentTag(studentId, tagName) {
+  const response = await fetch(`${API_URL}/students/${studentId}/tags`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      tag_name: tagName
+    })
+  });
 
   if (!response.ok) {
-    throw new Error("Failed to add tag");
+    throw new Error("Failed to add student tag");
   }
 
   return response.json();
 }
+
 
 export async function expireSessionTag(tagId) {
   const response = await fetch(

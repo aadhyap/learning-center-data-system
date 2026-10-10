@@ -6,7 +6,7 @@ import StudentTags from "./StudentTags";
 
 import { useStudentHistory } from "../queries/useStudentHistory";
 import { useStudentTags } from "../queries/useStudentTags";
-import { addSessionTag, expireSessionTag } from "../api/api";
+import { addStudentTag, expireSessionTag } from "../api/api";
 
 const TAG_OPTIONS = [
   "needs_attention",
@@ -126,15 +126,6 @@ function StudentProfile({ student, onBack, onSave }) {
       tag => !selectedTags.includes(tag.tag_name)
     );
 
-    const latestSession = [...(sessions || [])].sort(
-      (a, b) =>
-        new Date(b.session_date) - new Date(a.session_date)
-    )[0];
-
-    if (tagsToAdd.length > 0 && !latestSession) {
-      alert("This student needs a session before adding tags.");
-      return;
-    }
 
     setIsSaving(true);
 
@@ -149,7 +140,7 @@ function StudentProfile({ student, onBack, onSave }) {
       }
 
       for (const tagName of tagsToAdd) {
-        await addSessionTag(latestSession.session_id, tagName);
+        await addStudentTag(student.student_id, tagName);
       }
 
       for (const tag of tagsToRemove) {
