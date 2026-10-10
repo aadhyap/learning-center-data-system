@@ -1,4 +1,7 @@
-function SessionHistory({ sessions }) {
+
+import StudentTags from "./StudentTags";
+
+function SessionHistory({ sessions = [] }) {
   return (
     <div className="session-list">
 
@@ -8,6 +11,14 @@ function SessionHistory({ sessions }) {
           <div className="session-date">
             {new Date(session.session_date).toLocaleDateString()}
           </div>
+
+          {/* TAGS */}
+          {session.tags?.length > 0 && (
+            <div className="session-detail session-tags">
+              <span className="detail-label">Session Tags</span>
+              <StudentTags tags={session.tags} />
+            </div>
+          )}
 
           <div className="session-detail session-notes">
             <span className="detail-label">Notes</span>
