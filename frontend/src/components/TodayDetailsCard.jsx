@@ -93,7 +93,11 @@ const { tags, loadTags } = useStudentTags(student.student_id);
 
           <div className="debrief-control">
             <span className="today-belt-label">
-                 {student.debrief_method}
+                  {student.debrief_method === "in_person"
+                  ? "In Person"
+                  : student.debrief_method === "email"
+                  ? "Email"
+                  : "Not Set"}
                 </span>
             <span className="detail-label">
               Debrief Complete
