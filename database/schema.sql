@@ -35,6 +35,5 @@ CREATE TABLE session_tags (
             'easily_distracted'
         )),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    expires_at TIMESTAMPTZ,
-    resolved_at TIMESTAMPTZ
+    expires_at TIMESTAMPTZ
 );

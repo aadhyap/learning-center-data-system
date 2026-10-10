@@ -38,24 +38,48 @@ def search_students(search):
 '''
 Get all sessions for one student, newest first
 '''
+
 def get_student_history(student_id):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT
-                    session_id,
-                    student_id,
-                    session_date,
-                    next_session,
-                    achievements,
-                    notes,
-                    debrief_completed
+                    sessions.session_id,
+                    sessions.student_id,
+                    sessions.session_date,
+                    sessions.next_session,
+                    sessions.achievements,
+                    sessions.notes,
+                    sessions.debrief_completed,
+
+                    COALESCE(
+                        (
+                            SELECT json_agg(
+                                json_build_object(
+                                    'tag_id', tags.tag_id,
+                                    'tag_name', tags.tag_name,
+                                    'expires_at', tags.expires_at
+                                )
+                                ORDER BY tags.tag_id
+                            )
+                            FROM tags
+                            WHERE tags.session_id = sessions.session_id
+                              AND tags.student_id = sessions.student_id
+                        ),
+                        '[]'::json
+                    ) AS tags
+
                 FROM sessions
-                WHERE student_id = %s
-                ORDER BY session_date DESC;
+                WHERE sessions.student_id = %s
+                ORDER BY sessions.session_date DESC
             """, (student_id,))
 
-            return cur.fetchall()
+            columns = [desc[0] for desc in cur.description]
+
+            return [
+                dict(zip(columns, row))
+                for row in cur.fetchall()
+            ]
 
 '''
 
@@ -105,34 +129,47 @@ def add_student(
 '''
 Add session tags
 '''
-def add_session_tag(session_id, tag_name):
+def add_student_tag(student_id, tag_name):
     with get_connection() as conn:
         with conn.cursor() as cur:
+
+            # Find the student's latest session today
             cur.execute("""
-                INSERT INTO session_tags (
+                SELECT session_id, session_date
+                FROM sessions
+                WHERE student_id = %s
+                  AND session_date::date = CURRENT_DATE
+                ORDER BY session_date DESC
+                LIMIT 1
+            """, (student_id,))
+
+            session = cur.fetchone()
+
+            session_id = session[0] if session else None
+            session_date = session[1] if session else None
+
+            # Coming from Break expires at midnight
+            # after the session day.
+            expires_at = None
+
+            if tag_name == "coming_from_break" and session_date:
+                from datetime import timedelta
+                expires_at = (
+                    session_date.date() + timedelta(days=1)
+                )
+
+            cur.execute("""
+                INSERT INTO tags (
+                    student_id,
                     session_id,
                     tag_name,
                     expires_at
                 )
-                SELECT
-                    %s,
-                    %s,
-                    CASE
-                        WHEN %s = 'coming_from_break'
-                        THEN (
-                            date_trunc('day', session_date)
-                            + INTERVAL '1 day'
-                        )
-                        ELSE NULL
-                    END
-                FROM sessions
-                WHERE session_id = %s
-                ON CONFLICT (session_id, tag_name) DO NOTHING
+                VALUES (%s, %s, %s, %s)
                 RETURNING tag_id
-            """, (session_id, tag_name, tag_name, session_id))
+            """, (student_id, session_id, tag_name, expires_at))
 
-            result = cur.fetchone()
-            return result[0] if result else None
+            return cur.fetchone()[0]
 
 '''
 Can Edit Student, can change any of its parameters 
@@ -238,7 +275,24 @@ def check_in_student(student_id):
             result = cur.fetchone()
 
             if result:
-                return result[0]
+                session_id = result[0]
+
+                # Link pending tags to the new session
+                cur.execute("""
+                    UPDATE tags
+                    SET
+                        session_id = %s,
+                        expires_at = CASE
+                            WHEN tag_name = 'coming_from_break'
+                            THEN date_trunc('day', NOW()) + INTERVAL '1 day'
+                            ELSE NULL
+                        END
+                    WHERE student_id = %s
+                    AND session_id IS NULL
+                    AND expires_at IS NULL
+                """, (session_id, student_id))
+
+                return session_id
 
             return None
 
