@@ -102,12 +102,15 @@ def create_student(student: StudentCreate):
 #Add session for student
 @app.post("/students/{student_id}/check-in")
 def check_in(student_id: int):
-
     session_id = check_in_student(student_id)
 
-    return {
-        "session_id": session_id
-    }
+    if session_id is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Student not found"
+        )
+
+    return {"session_id": session_id}
 
 #tags
 
