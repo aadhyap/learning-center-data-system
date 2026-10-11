@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi import HTTPException
+from fastapi import Depends
+from auth import require_auth
 
 from db import (
     search_students,
@@ -18,7 +20,9 @@ from db import (
     expire_tag
 )
 
-app = FastAPI()
+app = FastAPI(
+    dependencies=[Depends(require_auth)]
+)
 #to let FastAPI let the React app running at localhost:5173 to make browser requests to me
 app.add_middleware(
     CORSMiddleware,
