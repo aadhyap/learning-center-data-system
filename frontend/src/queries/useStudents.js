@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
   getStudents,
@@ -60,10 +60,6 @@ export function useStudents() {
       console.error("Error loading students:", error);
     }
   }
-
-  useEffect(() => {
-    loadStudents();
-  }, []);
 
   return {
   students,

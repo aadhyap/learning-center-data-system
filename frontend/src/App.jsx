@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useStudents } from "./queries/useStudents";
 import { useTodayStudents } from "./queries/useTodayStudents";
+import { setAuthToken } from "./api/authFetch";
 import "./App.css";
 
 import StudentList from "./components/StudentList";
@@ -9,15 +10,18 @@ import TodayStudents from "./TodayStudents";
 import AddStudent from "./components/AddStudent";
 import Login from "./components/Auth/Login";
 
+
 function App() {
   const [search, setSearch] = useState("");
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [page, setPage] = useState("students");
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [googleToken, setGoogleToken] = useState(null);
+  
 
-  const {
+    const {
     students,
+    loadStudents,
     saveStudent,
     createStudent
   } = useStudents();
@@ -28,6 +32,7 @@ function App() {
 
   const {
   todayStudents,
+  loadTodayStudents,
   checkIn,
   checkOut,
   saveSession
@@ -47,9 +52,25 @@ function App() {
     );
   });
 
+  useEffect(() => {
+  if (googleToken) {
+    loadStudents();
+    loadTodayStudents();
+  }
+}, [googleToken]);
+
   if (!googleToken) {
-  return <Login onLogin={setGoogleToken} />;
+  return (
+    <Login
+      onLogin={(token) => {
+        setAuthToken(token);
+        setGoogleToken(token);
+      }}
+    />
+  );
 }
+
+
 
   return (
   <div className="app">

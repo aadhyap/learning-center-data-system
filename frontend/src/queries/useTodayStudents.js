@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
   getTodayStudents,
@@ -111,10 +111,6 @@ export function useTodayStudents() {
     }
   }
 
-
-  useEffect(() => {
-    loadTodayStudents();
-  }, []);
 
 
   return {

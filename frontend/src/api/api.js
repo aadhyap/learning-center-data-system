@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8000";
+import { authFetch } from "./authFetch";
 
 export async function getStudents() {
   const response = await fetch(`${API_URL}/students`);
@@ -83,16 +83,13 @@ export async function getStudentHistory(studentId) {
 }
 
 export async function updateStudent(studentId, studentData) {
-  const response = await fetch(
-    `${API_URL}/students/${studentId}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(studentData)
-    }
-  );
+  const response = await authFetch(`/students/${studentId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(studentData)
+  });
 
   if (!response.ok) {
     throw new Error("Failed to update student");
