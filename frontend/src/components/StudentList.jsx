@@ -1,5 +1,6 @@
 import { useStudentTags } from "../queries/useStudentTags";
 import StudentTags from "./StudentTags";
+import { CalendarDays, ArrowLeft} from "lucide-react";
 
 function timeAgo(date) {
   if (!date) return "Never";
@@ -101,7 +102,8 @@ function StudentList({
   onCheckIn,
   onCheckOut,
   onSelectStudent,
-  onAddStudent
+  onAddStudent,
+  onViewToday
 }) {
   return (
     <>
@@ -111,9 +113,25 @@ function StudentList({
           <p>View and manage student progress</p>
         </div>
 
-        <button onClick={onAddStudent}>
+              <div className="student-header-actions">
+        <button
+          className="today-students-button"
+          onClick={onViewToday}
+          type="button"
+        >
+          <CalendarDays size={16} />
+          Today's Students
+         
+        </button>
+
+        <button
+          className="add-student-button"
+          onClick={onAddStudent}
+          type="button"
+        >
           + Add Student
         </button>
+      </div>
       </div>
 
       <div className="student-list">

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useStudents } from "./queries/useStudents";
 import { useTodayStudents } from "./queries/useTodayStudents";
 import { setAuthToken } from "./api/authFetch";
+import { filterStudents } from "./utils/filterStudents";
 import "./App.css";
 
 import StudentList from "./components/StudentList";
@@ -9,10 +10,20 @@ import StudentProfile from "./components/StudentProfile";
 import TodayStudents from "./TodayStudents";
 import AddStudent from "./components/AddStudent";
 import Login from "./components/Auth/Login";
+import StudentFilters from "./components/StudentFilters";
 
 
 function App() {
-  const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState({
+  search: "",
+  program: "all",
+  beltColor: "all",
+  track: "all",
+  rank: "all",
+  roboticsLevel: "all",
+  attendance: "all",
+  sortBy: "name"
+});
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [page, setPage] = useState("students");
   const [showAddStudent, setShowAddStudent] = useState(false);
@@ -39,16 +50,7 @@ function App() {
 } = useTodayStudents();
 
 
-  const filteredStudents = students.filter((student) => {
-    const fullName =
-      `${student.first_name} ${student.last_name}`.toLowerCase();
-
-    const searchText = search.toLowerCase();
-
-    return (
-      fullName.includes(searchText)
-    );
-  });
+  const filteredStudents = filterStudents(students, filters);
 
   useEffect(() => {
   if (googleToken) {
@@ -80,39 +82,22 @@ function App() {
         <h2>Student Progress</h2>
 
         <input
-          className="search"
-          type="text"
-          placeholder="Search students..."
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
+        className="search"
+        type="text"
+        placeholder="Search students..."
+        value={filters.search}
+        onChange={(event) =>
+          setFilters((previous) => ({
+            ...previous,
+            search: event.target.value
+          }))
+        }
         />
 
-        <h3>Filters</h3>
-
-        <p>Program</p>
-
-        <label>
-          <input type="checkbox" /> Create
-        </label>
-
-        <label>
-          <input type="checkbox" /> Junior
-        </label>
-
-        <label>
-          <input type="checkbox" /> Godot
-        </label>
-
-        <button
-          className="today-nav"
-          onClick={() => {
-            setSelectedStudentId(null);
-            setPage("today");
-          }}
-        >
-          <span>Today's Students</span>
-          <span className="today-arrow">→</span>
-        </button>
+        <StudentFilters
+          filters={filters}
+          setFilters={setFilters}
+        />
 
       </aside>
     )}
@@ -152,6 +137,10 @@ function App() {
             setSelectedStudentId(student.student_id)
           }
           onAddStudent={() => setShowAddStudent(true)}
+          onViewToday={() => {
+            setSelectedStudentId(null);
+            setPage("today");
+          }}
         />
       )}
 

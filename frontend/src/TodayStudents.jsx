@@ -21,11 +21,19 @@ function TodayStudents({
   return (
     <div className="today-page">
 
-      <div className="page-header">
+      <div className="page-header today-page-header">
         <div>
           <h1>Today's Students</h1>
           <p>{formattedDate}</p>
         </div>
+
+        <button
+        className="back-button today-back-button"
+        onClick={onBack}
+        type="button"
+      >
+        All Students <span>→</span>
+      </button>
       </div>
 
       <div className="today-content">
@@ -50,12 +58,6 @@ function TodayStudents({
 
       </div>
 
-      <button
-        className="back-button today-back-button"
-        onClick={onBack}
-      >
-        Back to All Students →
-      </button>
 
     </div>
   );
