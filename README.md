@@ -34,6 +34,13 @@ Students can also be categorized using **programs** and **tags**, allowing instr
 
 [![Watch the demo](demo-frontend.gif)](https://github.com/user-attachments/assets/a1b20a95-4f41-47bd-9ca5-b9b62e690210)
 
+## Dev Log 09/10
+
+- Can Add Student, students have tags, and create a session, aunthentication for every api request
+
+[![Watch the demo](demo-frontend.gif)](https://github.com/user-attachments/assets/823e0a4a-115b-48bb-857c-739fbe0b458d)
+
+
 
 
 ## Core Features
