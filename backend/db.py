@@ -5,8 +5,6 @@ from dotenv import load_dotenv
 load_dotenv()
 # Connect to an existing database
 def get_connection():
-    print("DB_HOST:", os.getenv("DB_HOST"))
-    print("DB_NAME:", os.getenv("DB_NAME"))
 
     return psycopg.connect(
         host=os.getenv("DB_HOST"),

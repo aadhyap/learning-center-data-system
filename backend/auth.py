@@ -6,7 +6,11 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 
 GOOGLE_CLIENT_ID = os.environ["GOOGLE_CLIENT_ID"]
-ALLOWED_EMAIL = "putturaadhya@gmail.com"
+ALLOWED_EMAILS = {
+    email.strip().lower()
+    for email in os.getenv("ALLOWED_EMAILS", "").split(",")
+    if email.strip()
+}
 
 
 def require_auth(authorization: str | None = Header(default=None)):
@@ -31,7 +35,7 @@ def require_auth(authorization: str | None = Header(default=None)):
         )
 
     if (
-        user.get("email") != ALLOWED_EMAIL
+        user.get("email") not in ALLOWED_EMAILS
         or user.get("email_verified") is not True
     ):
         raise HTTPException(
