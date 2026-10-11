@@ -92,9 +92,9 @@ export async function updateStudent(studentId, studentData) {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to update student");
-  }
-
+  const error = await response.text();
+  throw new Error(`Failed to update student (${response.status}): ${error}`);
+}
   return response.json();
 }
 
@@ -157,6 +157,22 @@ export async function expireSessionTag(tagId) {
 
   if (!response.ok) {
     throw new Error("Failed to remove tag");
+  }
+
+  return response.json();
+}
+
+export async function updateStudentBelt(studentId, belt) {
+  const response = await authFetch(`/students/${studentId}/belt`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ belt })
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update belt");
   }
 
   return response.json();

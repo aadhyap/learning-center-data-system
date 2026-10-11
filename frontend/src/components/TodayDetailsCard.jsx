@@ -1,23 +1,36 @@
 import { useEffect, useState } from "react";
-import { getStudentTags } from "../api/api";
+import { updateStudentBelt } from "../api/api";
 import StudentTags from "./StudentTags";
 import { useStudentTags } from "../queries/useStudentTags";
 
+
 function TodayDetailsCard({
   student,
-  onSave
+  onSave, 
+  onRefresh
 }) {
 
 const { tags, loadTags } = useStudentTags(student.student_id);
   const [isOpen, setIsOpen] = useState(true);
 
   const [formData, setFormData] = useState({
+    username: student.username,
     belt: student.belt || "",
     notes: student.notes || "",
     achievements: student.achievements || "",
     next_session: student.next_session || "",
     debrief_completed: student.debrief_completed || false
   });
+
+  useEffect(() => {
+  setFormData({
+    belt: student.belt || "",
+    notes: student.notes || "",
+    achievements: student.achievements || "",
+    next_session: student.next_session || "",
+    debrief_completed: student.debrief_completed || false
+  });
+}, [student]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -38,23 +51,45 @@ const { tags, loadTags } = useStudentTags(student.student_id);
     });
   }
 
-  async function handleSave() {
-    const sessionData = {
-      notes: formData.notes,
-      achievements: formData.achievements,
-      next_session: formData.next_session,
-      debrief_completed: formData.debrief_completed
-    };
+  
+async function handleSave() {
+  const sessionData = {
+    notes: formData.notes,
+    achievements: formData.achievements,
+    next_session: formData.next_session,
+    debrief_completed: formData.debrief_completed
+  };
 
-    const success = await onSave(
-      student.session_id,
-      sessionData
-    );
-
-    if (success) {
-      console.log("Session saved!");
+  // Save belt first, before updating session state
+  if (formData.belt !== student.belt) {
+    try {
+      await updateStudentBelt(
+        student.student_id,
+        formData.belt
+      );
+    } catch (error) {
+      console.error("Failed to update belt:", error);
+      return;
     }
   }
+
+  // Save today's session
+  const sessionSaved = await onSave(
+    student.session_id,
+    sessionData
+  );
+
+  if (!sessionSaved) {
+    console.error("Failed to save session");
+    return;
+  }
+
+  // Retrieve the updated belt and session information
+  await onRefresh();
+
+  console.log("Session and belt saved!");
+}
+
 
   return (
     <div

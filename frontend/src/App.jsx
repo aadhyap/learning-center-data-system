@@ -127,6 +127,8 @@ function App() {
         <TodayStudents
           todayStudents={todayStudents}
           onSaveSession={saveSession}
+          loadTodayStudents={loadTodayStudents}
+          loadStudents={loadStudents}
           onBack={() => {
             setSelectedStudentId(null);
             setPage("students");

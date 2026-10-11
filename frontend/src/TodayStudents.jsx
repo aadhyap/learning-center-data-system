@@ -4,6 +4,8 @@ import TodayDetailsCard from "./components/TodayDetailsCard";
 function TodayStudents({
   todayStudents,
   onSaveSession,
+  loadTodayStudents,
+  loadStudents,
   onBack
 }) {
   const today = new Date();
@@ -33,9 +35,15 @@ function TodayStudents({
         ) : (
           todayStudents.map((student) => (
             <TodayDetailsCard
-                key={student.session_id}
-                student={student}
-                onSave={onSaveSession}
+              key={student.session_id}
+              student={student}
+              onSave={onSaveSession}
+              onRefresh={async () => {
+                await Promise.all([
+                  loadTodayStudents(),
+                  loadStudents()
+                ]);
+              }}
             />
           ))
         )}

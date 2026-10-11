@@ -14,6 +14,7 @@ from db import (
     get_student_history,
     get_all_students,
     edit_session,
+    edit_student_belt,
     delete_session,
     get_active_student_tags,
     add_student_tag,
@@ -63,6 +64,9 @@ class SessionUpdate(BaseModel):
 
 class TagCreate(BaseModel):
     tag_name: str
+
+class BeltUpdate(BaseModel):
+    belt: str
 
 @app.get("/")
 def root():
@@ -225,3 +229,19 @@ def students_today():
 def remove_session(session_id: int):
     delete_session(session_id)
     return {"message": "Session deleted"}
+
+
+@app.patch("/students/{student_id}/belt")
+def update_student_belt(student_id: int, data: BeltUpdate):
+    updated = edit_student_belt(student_id, data.belt)
+
+    if not updated:
+        raise HTTPException(
+            status_code=404,
+            detail="Student not found"
+        )
+
+    return {
+        "student_id": student_id,
+        "belt": data.belt
+    }

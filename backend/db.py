@@ -339,7 +339,7 @@ def get_students_today():
                     students.program,
                     students.debrief_method,
                     students.email,
-                    sessions.belt,
+                    students.belt,
                     sessions.session_id,
                     sessions.session_date,
                     sessions.next_session,
@@ -429,4 +429,21 @@ def expire_tag(tag_id):
 
             return tag_id
 
-
+def edit_student_belt(student_id, belt):
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                UPDATE students
+                SET belt = %s
+                WHERE student_id = %s
+                RETURNING student_id
+                """,
+                (belt, student_id)
+            )
+            updated = cur.fetchone()
+        conn.commit()
+        return updated is not None
+    finally:
+        conn.close()
