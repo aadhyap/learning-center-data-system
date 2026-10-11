@@ -37,7 +37,6 @@ app.add_middleware(
 )
 
 class StudentCreate(BaseModel):
-    username: str
     first_name: str
     last_name: str
     email: str | None = None
@@ -47,7 +46,6 @@ class StudentCreate(BaseModel):
     summary: str | None = None
 
 class StudentUpdate(BaseModel):
-    username: str
     first_name: str
     last_name: str
     email: str | None = None
@@ -75,15 +73,15 @@ def root():
 #Searches Student
 @app.get("/students/search")
 def search(name: str):
-        students = search_students(name)
-        return [
+    students = search_students(name)
+
+    return [
         {
             "student_id": student[0],
-            "username": student[1],
-            "first_name": student[2],
-            "last_name": student[3],
-            "program": student[4],
-            "belt": student[5]
+            "first_name": student[1],
+            "last_name": student[2],
+            "program": student[3],
+            "belt": student[4]
         }
         for student in students
     ]
@@ -91,9 +89,7 @@ def search(name: str):
 #Add Student
 @app.post("/students")
 def create_student(student: StudentCreate):
-
     student_id = add_student(
-        student.username,
         student.first_name,
         student.last_name,
         student.email,
@@ -103,9 +99,7 @@ def create_student(student: StudentCreate):
         student.summary
     )
 
-    return {
-        "student_id": student_id
-    }
+    return {"student_id": student_id}
 
 #Add session for student
 @app.post("/students/{student_id}/check-in")
@@ -155,10 +149,8 @@ def expire_student_tag(tag_id: int):
 #Update Student 
 @app.put("/students/{student_id}")
 def update_student(student_id: int, student: StudentUpdate):
-
     edit_student(
         student_id,
-        student.username,
         student.first_name,
         student.last_name,
         student.email,
@@ -168,9 +160,7 @@ def update_student(student_id: int, student: StudentUpdate):
         student.summary
     )
 
-    return {
-        "message": "Student updated"
-    }
+    return {"message": "Student updated"}
 
 #Update Session
 @app.put("/sessions/{session_id}")

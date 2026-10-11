@@ -46,8 +46,6 @@ function StudentCard({
           {student.first_name} {student.last_name}
         </h2>
 
-        <p>@{student.username}</p>
-
         {/* ACTIVE TAGS */}
         <StudentTags tags={tags} />
       </div>

@@ -11,7 +11,6 @@ function AddStudent({ onBack, onCreate }) {
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
-    username: "",
     program: "",
     belt: "",
     email: "",
@@ -98,16 +97,6 @@ async function handleSubmit(event) {
             <input
               name="last_name"
               value={formData.last_name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="detail-label">Username *</label>
-            <input
-              name="username"
-              value={formData.username}
               onChange={handleChange}
               required
             />

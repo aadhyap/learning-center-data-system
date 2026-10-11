@@ -23,7 +23,6 @@ def search_students(search):
             cur.execute("""
                 SELECT
                     student_id,
-                    username,
                     first_name,
                     last_name,
                     program,
@@ -87,7 +86,6 @@ Add Student
 
 '''
 def add_student(
-    username,
     first_name,
     last_name,
     email,
@@ -100,7 +98,6 @@ def add_student(
         with conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO students (
-                    username,
                     first_name,
                     last_name,
                     email,
@@ -109,10 +106,9 @@ def add_student(
                     debrief_method,
                     summary
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
                 RETURNING student_id;
             """, (
-                username,
                 first_name,
                 last_name,
                 email,
@@ -176,7 +172,6 @@ Can Edit Student, can change any of its parameters
 '''
 def edit_student(
     student_id,
-    username,
     first_name,
     last_name,
     email,
@@ -190,7 +185,6 @@ def edit_student(
             cur.execute("""
                 UPDATE students
                 SET
-                    username = %s,
                     first_name = %s,
                     last_name = %s,
                     email = %s,
@@ -200,7 +194,6 @@ def edit_student(
                     summary = %s
                 WHERE student_id = %s;
             """, (
-                username,
                 first_name,
                 last_name,
                 email,
@@ -302,7 +295,6 @@ def get_all_students():
             cur.execute("""
                 SELECT
                     students.student_id,
-                    students.username,
                     students.first_name,
                     students.last_name,
                     students.email,

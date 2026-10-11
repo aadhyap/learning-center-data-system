@@ -43,12 +43,10 @@ function App() {
     const fullName =
       `${student.first_name} ${student.last_name}`.toLowerCase();
 
-    const username = student.username.toLowerCase();
     const searchText = search.toLowerCase();
 
     return (
-      fullName.includes(searchText) ||
-      username.includes(searchText)
+      fullName.includes(searchText)
     );
   });
 

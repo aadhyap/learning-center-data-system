@@ -108,7 +108,6 @@ function StudentProfile({ student, onBack, onSave }) {
     if (isSaving) return;
 
     const updatedStudent = {
-      username: student.username,
       first_name: formData.first_name,
       last_name: formData.last_name,
       email: student.email,
@@ -198,8 +197,6 @@ function StudentProfile({ student, onBack, onSave }) {
                 {student.first_name} {student.last_name}
               </h1>
             )}
-
-            <p>@{student.username}</p>
           </div>
 
           <button

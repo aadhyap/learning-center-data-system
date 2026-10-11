@@ -14,7 +14,6 @@ const { tags, loadTags } = useStudentTags(student.student_id);
   const [isOpen, setIsOpen] = useState(true);
 
   const [formData, setFormData] = useState({
-    username: student.username,
     belt: student.belt || "",
     notes: student.notes || "",
     achievements: student.achievements || "",
