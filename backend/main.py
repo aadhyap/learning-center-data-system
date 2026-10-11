@@ -4,6 +4,11 @@ from pydantic import BaseModel
 from fastapi import HTTPException
 from fastapi import Depends
 from auth import require_auth
+from datetime import datetime, time
+from zoneinfo import ZoneInfo
+from fastapi import HTTPException
+from db import finalize_day
+from apscheduler.schedulers.background import BackgroundScheduler
 
 from db import (
     search_students,
@@ -35,6 +40,22 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+scheduler = BackgroundScheduler(timezone="America/Los_Angeles")
+
+scheduler.add_job(
+    finalize_day,
+    trigger="cron",
+    hour=18,
+    minute=0,
+    id="finalize_day",
+    replace_existing=True
+)
+
+PACIFIC = ZoneInfo("America/Los_Angeles")
+
+scheduler.start()
 
 class StudentCreate(BaseModel):
     first_name: str
@@ -235,3 +256,25 @@ def update_student_belt(student_id: int, data: BeltUpdate):
         "student_id": student_id,
         "belt": data.belt
     }
+
+
+
+
+@app.post("/sessions/finalize-day")
+def finalize_today():
+    now = datetime.now(PACIFIC)
+
+    if not (time(17, 50) <= now.time() < time(18, 0)):
+        raise HTTPException(
+            status_code=403,
+            detail="Save Day is only available from 5:50 PM to 6:00 PM Pacific."
+        )
+
+    count = finalize_day()
+
+    return {
+        "message": "Day finalized successfully",
+        "sessions_finalized": count
+    }
+
+    

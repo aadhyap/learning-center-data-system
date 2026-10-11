@@ -341,7 +341,10 @@ def get_students_today():
                 FROM students
                 JOIN sessions
                     ON students.student_id = sessions.student_id
-                WHERE sessions.session_date::date = CURRENT_DATE
+                WHERE
+                    (sessions.session_date AT TIME ZONE 'America/Los_Angeles')::date =
+                    (NOW() AT TIME ZONE 'America/Los_Angeles')::date
+                    AND sessions.finalized = FALSE
                 ORDER BY sessions.session_date
             """)
 
@@ -439,3 +442,22 @@ def edit_student_belt(student_id, belt):
         return updated is not None
     finally:
         conn.close()
+
+def finalize_day():
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE sessions
+                SET finalized = TRUE
+                WHERE finalized = FALSE
+                  AND (
+                    session_date AT TIME ZONE
+                    'America/Los_Angeles'
+                  )::date <= (
+                    NOW() AT TIME ZONE
+                    'America/Los_Angeles'
+                  )::date
+                RETURNING session_id
+            """)
+
+            return len(cur.fetchall())
