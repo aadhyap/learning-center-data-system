@@ -6,7 +6,7 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 
 GOOGLE_CLIENT_ID = os.environ["GOOGLE_CLIENT_ID"]
-ALLOWED_EMAIL = "cnnorthwood@gmail.com"
+ALLOWED_EMAIL = "putturaadhya@gmail.com"
 
 
 def require_auth(authorization: str | None = Header(default=None)):

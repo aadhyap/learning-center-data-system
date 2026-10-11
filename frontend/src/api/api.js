@@ -1,7 +1,7 @@
 import { authFetch } from "./authFetch";
 
 export async function getStudents() {
-  const response = await authfetch(`${API_URL}/students`);
+  const response = await authFetch(`/students`);
 
   if (!response.ok) {
     throw new Error("Failed to load students");
@@ -11,10 +11,10 @@ export async function getStudents() {
 }
 
 export async function getTodayStudents() {
-  const response = await authfetch(`${API_URL}/students/today`);
+  const response = await authFetch(`/students/today`);
 
   if (!response.ok) {
-    throw new Error("Failed to load today's students");
+    throw new Error(`Failed to load today's students: ${response.status}`);
   }
 
   return response.json();
@@ -22,8 +22,8 @@ export async function getTodayStudents() {
 
 
 export async function checkInStudent(studentId) {
-  const response = await authfetch(
-    `${API_URL}/students/${studentId}/check-in`,
+  const response = await authFetch(
+    `/students/${studentId}/check-in`,
     {
       method: "POST"
     }
@@ -38,7 +38,7 @@ export async function checkInStudent(studentId) {
 
 
 export async function addStudent(studentData) {
-  const response = await authfetch(`${API_URL}/students`, {
+  const response = await authFetch(`/students`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -56,8 +56,8 @@ export async function addStudent(studentData) {
 
 
 export async function deleteSession(sessionId) {
-  const response = await authfetch(
-    `${API_URL}/sessions/${sessionId}`,
+  const response = await authFetch(
+    `/sessions/${sessionId}`,
     {
       method: "DELETE"
     }
@@ -71,8 +71,8 @@ export async function deleteSession(sessionId) {
 }
 
 export async function getStudentHistory(studentId) {
-  const response = await authfetch(
-    `${API_URL}/students/${studentId}/history`
+  const response = await authFetch(
+    `/students/${studentId}/history`
   );
 
   if (!response.ok) {
@@ -99,8 +99,8 @@ export async function updateStudent(studentId, studentData) {
 }
 
 export async function updateSession(sessionId, sessionData) {
-  const response = await authfetch(
-    `${API_URL}/sessions/${sessionId}`,
+  const response = await authFetch(
+    `/sessions/${sessionId}`,
     {
       method: "PUT",
       headers: {
@@ -118,8 +118,8 @@ export async function updateSession(sessionId, sessionData) {
 }
 
 export async function getStudentTags(studentId) {
-  const response = await authfetch(
-    `${API_URL}/students/${studentId}/tags`
+  const response = await authFetch(
+    `/students/${studentId}/tags`
   );
 
   if (!response.ok) {
@@ -131,7 +131,7 @@ export async function getStudentTags(studentId) {
 
 
 export async function addStudentTag(studentId, tagName) {
-  const response = await authfetch(`${API_URL}/students/${studentId}/tags`, {
+  const response = await authFetch(`/students/${studentId}/tags`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -150,8 +150,8 @@ export async function addStudentTag(studentId, tagName) {
 
 
 export async function expireSessionTag(tagId) {
-  const response = await authfetch(
-    `${API_URL}/tags/${tagId}/expire`,
+  const response = await authFetch(
+    `/tags/${tagId}/expire`,
     { method: "PATCH" }
   );
 
