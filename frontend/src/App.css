@@ -191,6 +191,64 @@
   resize: vertical;
 }
 
+
+/* ========================================
+   Today Dashboard
+======================================== */
+
+.today-dashboard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid #e0e4eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.today-dashboard p {
+  margin: 0 0 8px;
+  color: #7b8190;
+  font-size: 13px;
+}
+
+.today-dashboard h2 {
+  margin: 0;
+  font-size: 32px;
+}
+
+.today-save {
+  text-align: right;
+}
+
+.today-save button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #6478d3;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.today-save button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .today-dashboard {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .today-save {
+    text-align: left;
+  }
+}
+
 /* ========================================
    DEBRIEF & COLLAPSE
 ======================================== */
@@ -335,6 +393,17 @@
 
 /* Form layout */
 
+.field-error {
+  color: #dc2626;
+  font-size: 12px;
+  margin: 5px 0 0;
+}
+
+.add-student-form select {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
 .add-student-form .profile-details {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -363,8 +432,8 @@
 }
 
 .add-student-form input:not([type="checkbox"]),
-.add-student-form select,
-.add-student-form textarea {
+.add-student-form textarea,
+.add-student-form select {
   width: 100%;
   box-sizing: border-box;
   padding: 11px 12px;
@@ -373,6 +442,19 @@
   background: white;
   color: #1f2937;
   font: inherit;
+  font-size: 14px;
+}
+
+.add-student-form input:focus,
+.add-student-form textarea:focus,
+.add-student-form select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.add-student-form select {
+  cursor: pointer;
 }
 
 .add-student-form textarea {

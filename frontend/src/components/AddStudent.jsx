@@ -1,5 +1,12 @@
 
 import { useState } from "react";
+import {
+  BELT_COLORS,
+  TRACKS,
+  TRACK_RANKS,
+  buildBelt,
+  validateStudent
+} from "../utils/studentValidation";
 
 const TAG_OPTIONS = [
   { value: "needs_attention", label: "Needs Attention" },
@@ -8,6 +15,13 @@ const TAG_OPTIONS = [
 ];
 
 function AddStudent({ onBack, onCreate }) {
+  const [beltType, setBeltType] = useState("standard");
+  const [beltColor, setBeltColor] = useState("");
+  const [beltLevel, setBeltLevel] = useState("");
+  const [track, setTrack] = useState("");
+  const [rank, setRank] = useState("");
+  const [errors, setErrors] = useState({});
+
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -39,28 +53,65 @@ function AddStudent({ onBack, onCreate }) {
   }
 
   
+
 async function handleSubmit(event) {
   event.preventDefault();
 
   if (isSaving) return;
 
+  const belt =
+    formData.program === "CREATE"
+      ? buildBelt({
+          beltColor: beltType === "standard" ? beltColor : "",
+          beltLevel: beltType === "standard" ? beltLevel : "",
+          track: beltType === "track" ? track : "",
+          rank: beltType === "track" ? rank : ""
+        })
+      : formData.belt.trim();
+
+  const studentData = {
+    ...formData,
+    first_name: formData.first_name.trim(),
+    last_name: formData.last_name.trim(),
+    email: formData.email
+      .split(",")
+      .map(email => email.trim())
+      .filter(Boolean)
+      .join(", "),
+    belt
+  };
+
+  const validationErrors = validateStudent(studentData);
+
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
+
+  setErrors({});
   setIsSaving(true);
 
   try {
-    const success = await onCreate(formData, selectedTags);
+    const success = await onCreate(studentData, selectedTags);
 
     if (success) {
       onBack();
     } else {
-      alert("Failed to create student. Please try again.");
+      setErrors({
+        submit: "Could not create student. Please try again."
+      });
     }
   } catch (error) {
     console.error("Failed to create student:", error);
-    alert("Failed to create student. Please try again.");
+
+    setErrors({
+      submit: error.message || "Failed to create student."
+    });
   } finally {
     setIsSaving(false);
   }
 }
+
 
   return (
     <div className="add-student-form">
@@ -104,29 +155,146 @@ async function handleSubmit(event) {
 
           <div>
             <label className="detail-label">Program</label>
-            <input
-              name="program"
-              value={formData.program}
-              onChange={handleChange}
-            />
+            <select
+                name="program"
+                value={formData.program}
+                onChange={(e) => {
+                setFormData(prev => ({
+                ...prev,
+                program: e.target.value,
+                belt: ""
+                }));
+
+                setBeltColor("");
+                setBeltLevel("");
+                setTrack("");
+                setRank("");
+                setBeltType("standard");
+                setErrors({});
+                }}
+                required
+                >
+                <option value="">Select Program</option>
+                <option value="CREATE">CREATE</option>
+                <option value="Junior">Junior</option>
+                <option value="Robotics">Robotics</option>
+            </select>
+        {errors.program && <p className="field-error">{errors.program}</p>}
           </div>
 
-          <div>
-            <label className="detail-label">Belt</label>
-            <input
-              name="belt"
-              value={formData.belt}
-              onChange={handleChange}
-            />
-          </div>
+          
+<div>
+  <label className="detail-label">Belt *</label>
+
+  {!formData.program && (
+  <select disabled value="">
+    <option value="">Select a program first</option>
+  </select>
+)}
+
+  {formData.program === "CREATE" && (
+    <>
+      <select
+        value={beltType}
+        onChange={(e) => {
+          setBeltType(e.target.value);
+          setBeltColor("");
+          setBeltLevel("");
+          setTrack("");
+          setRank("");
+        }}
+      >
+        <option value="standard">Standard Belt</option>
+        <option value="track">Unity / Godot</option>
+      </select>
+
+      {beltType === "standard" ? (
+        <>
+          <select
+            value={beltColor}
+            onChange={(e) => setBeltColor(e.target.value)}
+          >
+            <option value="">Select Color</option>
+            {BELT_COLORS.map(color => (
+              <option key={color} value={color}>
+                {color}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={beltLevel}
+            onChange={(e) => setBeltLevel(e.target.value)}
+          >
+            <option value="">No Level</option>
+            {Array.from({ length: 10 }, (_, i) => i + 1).map(level => (
+              <option key={level} value={level}>
+                Level {level}
+              </option>
+            ))}
+          </select>
+        </>
+      ) : (
+        <>
+          <select
+            value={track}
+            onChange={(e) => setTrack(e.target.value)}
+          >
+            <option value="">Select Track</option>
+            {TRACKS.map(t => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+
+          <select
+            value={rank}
+            onChange={(e) => setRank(e.target.value)}
+          >
+            <option value="">No Rank</option>
+            {TRACK_RANKS.map(r => (
+              <option key={r} value={r}>{r}</option>
+            ))}
+          </select>
+        </>
+      )}
+    </>
+  )}
+
+  {formData.program === "Junior" && (
+    <input
+      name="belt"
+      value={formData.belt}
+      onChange={handleChange}
+      placeholder="Junior belt"
+    />
+  )}
+
+  {formData.program === "Robotics" && (
+    <select
+      name="belt"
+      value={formData.belt}
+      onChange={handleChange}
+    >
+      <option value="">Select Robotics Level</option>
+      <option value="Jr Robotics">Junior Robotics</option>
+      <option value="Int Robotics">Intermediate Robotics</option>
+      <option value="Adv Robotics">Advanced Robotics</option>
+    </select>
+  )}
+
+  {errors.belt && <p className="field-error">{errors.belt}</p>}
+</div>
+
 
           <div>
             <label className="detail-label">Email (Optional)</label>
             <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
+                type="email"
+                multiple
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="parent1@email.com, parent2@email.com"
             />
           </div>
 
@@ -174,6 +342,10 @@ async function handleSubmit(event) {
             ))}
           </div>
         </div>
+
+        {errors.submit && (
+  <p className="field-error">{errors.submit}</p>
+)}
 
         <button
         className="back-button"
