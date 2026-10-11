@@ -7,12 +7,14 @@ import StudentList from "./components/StudentList";
 import StudentProfile from "./components/StudentProfile";
 import TodayStudents from "./TodayStudents";
 import AddStudent from "./components/AddStudent";
+import Login from "./components/Auth/Login";
 
 function App() {
   const [search, setSearch] = useState("");
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [page, setPage] = useState("students");
   const [showAddStudent, setShowAddStudent] = useState(false);
+  const [googleToken, setGoogleToken] = useState(null);
 
   const {
     students,
@@ -44,6 +46,10 @@ function App() {
       username.includes(searchText)
     );
   });
+
+  if (!googleToken) {
+  return <Login onLogin={setGoogleToken} />;
+}
 
   return (
   <div className="app">
