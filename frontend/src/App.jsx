@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useStudents } from "./queries/useStudents";
 import { useTodayStudents } from "./queries/useTodayStudents";
@@ -8,6 +7,7 @@ import {
 } from "./api/authFetch";
 import "./App.css";
 
+import { useDebounce } from "./utils/useDebounce";
 import StudentList from "./components/StudentList";
 import StudentProfile from "./components/StudentProfile";
 import TodayStudents from "./TodayStudents";
@@ -15,9 +15,7 @@ import AddStudent from "./components/AddStudent";
 import Login from "./components/Auth/Login";
 import StudentFilters from "./components/StudentFilters";
 
-
 function App() {
-  // Filters
   const [filters, setFilters] = useState({
     search: "",
     program: "all",
@@ -28,16 +26,15 @@ function App() {
     attendance: "all",
     sortBy: "name"
   });
- const [searchInput, setSearchInput] = useState("");
-  // Navigation
+
+  // The input changes immediately; only the API search is debounced.
+  const debouncedSearch = useDebounce(filters.search, 350);
+
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [page, setPage] = useState("students");
   const [showAddStudent, setShowAddStudent] = useState(false);
-  const [googleToken, setGoogleToken] = useState(
-    () => getAuthToken()
-  );
+  const [googleToken, setGoogleToken] = useState(() => getAuthToken());
 
-  // Student data and pagination
   const {
     students,
     totalStudents,
@@ -52,7 +49,6 @@ function App() {
     createStudent
   } = useStudents();
 
-  // Today's students
   const {
     todayStudents,
     loadTodayStudents,
@@ -61,74 +57,63 @@ function App() {
     saveSession
   } = useTodayStudents();
 
+  // Program/belt/etc. changes take effect immediately; search waits 350 ms.
   useEffect(() => {
-  const timer = setTimeout(() => {
-    if (searchInput !== filters.search) {
-      updateFilters((previous) => ({
-        ...previous,
-        search: searchInput
-      }));
-    }
-  }, 350);
+    if (!googleToken || filters.search !== debouncedSearch) return;
 
-  return () => clearTimeout(timer);
-}, [searchInput, filters.search]);
-
-  // Load students when login, page, size, or filters change
-  useEffect(() => {
-    if (!googleToken) return;
-
-    loadStudents(studentPage, pageSize, filters);
+    loadStudents(studentPage, pageSize, {
+      ...filters,
+      search: debouncedSearch
+    });
   }, [
     googleToken,
     studentPage,
     pageSize,
-    filters,
+    debouncedSearch,
+    filters.search,
+    filters.program,
+    filters.beltColor,
+    filters.track,
+    filters.rank,
+    filters.roboticsLevel,
+    filters.attendance,
+    filters.sortBy,
     loadStudents
   ]);
 
-  // Load today's students after login
   useEffect(() => {
     if (!googleToken) return;
-
-
     loadTodayStudents();
   }, [googleToken]);
 
-  // Refresh the currently displayed student page
   function refreshStudents() {
-    return loadStudents(studentPage, pageSize, filters);
+    return loadStudents(studentPage, pageSize, {
+      ...filters,
+      search: debouncedSearch
+    });
   }
 
-  // Reset pagination when filters change
-function updateFilters(updater) {
-  setStudentPage(1);
+  function updateFilters(updater) {
+    setStudentPage(1);
+    setFilters((previous) => ({
+      ...previous,
+      ...(typeof updater === "function" ? updater(previous) : updater)
+    }));
+  }
 
-  setFilters((previous) => ({
-    ...previous,
-    ...(typeof updater === "function"
-      ? updater(previous)
-      : updater)
-  }));
-}
-
-  // Open student profile
   function onSelectStudent(student) {
     setSelectedStudent(student);
   }
 
-  // Open add student modal
   function onAddStudent() {
     setShowAddStudent(true);
   }
 
-  // Open today's students page
   function onViewToday() {
     setSelectedStudent(null);
     setPage("today");
   }
 
-  // Save a student and refresh their profile
   async function handleSaveStudent(studentId, studentData) {
     const success = await saveStudent(studentId, studentData);
 
@@ -145,40 +130,35 @@ function updateFilters(updater) {
     return success;
   }
 
-  // Create a student and refresh the list
   async function handleCreateStudent(studentData, selectedTags = []) {
     const success = await createStudent(studentData, selectedTags);
 
     if (success) {
       setShowAddStudent(false);
       setStudentPage(1);
-      await loadStudents(1, pageSize, filters);
+      await loadStudents(1, pageSize, {
+        ...filters,
+        search: debouncedSearch
+      });
     }
 
     return success;
   }
 
-  // Check in student and refresh attendance
   async function handleCheckIn(studentId) {
     const result = await checkIn(studentId);
-
     await loadTodayStudents();
     await refreshStudents();
-
     return result;
   }
 
-  // Check out student and refresh attendance
   async function handleCheckOut(sessionId) {
     const result = await checkOut(sessionId);
-
     await loadTodayStudents();
     await refreshStudents();
-
     return result;
   }
 
-  // Login
   if (!googleToken) {
     return (
       <Login
@@ -192,8 +172,6 @@ function updateFilters(updater) {
 
   return (
     <div className="app">
-
-      {/* Sidebar */}
       {page === "students" && (
         <aside className="sidebar">
           <h2>Student Progress</h2>
@@ -202,24 +180,21 @@ function updateFilters(updater) {
             className="search"
             type="text"
             placeholder="Search students..."
-            value={searchInput}
-            onChange={(event) => setSearchInput(event.target.value)}
+            value={filters.search}
+            onChange={(event) =>
+              updateFilters({ search: event.target.value })
+            }
           />
 
           <StudentFilters
             filters={filters}
-            setFilters={(updater) => {
-              setSearchInput("");
-              updateFilters(updater);
-            }}
+            setFilters={updateFilters}
           />
         </aside>
       )}
 
       <main className="content">
-
         {page === "today" ? (
-
           <TodayStudents
             todayStudents={todayStudents}
             onSaveSession={saveSession}
@@ -230,15 +205,12 @@ function updateFilters(updater) {
               setPage("students");
             }}
           />
-
         ) : selectedStudent ? (
-
           <StudentProfile
             student={selectedStudent}
             onSave={handleSaveStudent}
             onBack={() => setSelectedStudent(null)}
           />
-
         ) : (
           <>
             {error && (
@@ -267,10 +239,8 @@ function updateFilters(updater) {
             />
           </>
         )}
-
       </main>
 
-      {/* Add Student Modal */}
       {page === "students" &&
         !selectedStudent &&
         showAddStudent && (
@@ -289,7 +259,6 @@ function updateFilters(updater) {
             </div>
           </div>
         )}
-
     </div>
   );
 }

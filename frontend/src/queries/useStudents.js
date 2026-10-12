@@ -26,7 +26,16 @@ export function useStudents() {
     setError(null);
 
     try {
+      const start = performance.now();
+
       const data = await getStudents(page, size, filters);
+
+      console.log(
+        "Students API took:",
+        Math.round(performance.now() - start),
+        "ms",
+        filters
+      );
 
 
       let studentList;
