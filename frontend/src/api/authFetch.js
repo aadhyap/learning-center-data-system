@@ -1,7 +1,6 @@
-
 const API_URL = import.meta.env.VITE_API_URL;
 
-const TOKEN_KEY = "student_progress_google_token";
+const TOKEN_KEY = "googleToken";
 
 let googleToken = sessionStorage.getItem(TOKEN_KEY);
 
