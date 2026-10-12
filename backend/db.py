@@ -1,18 +1,48 @@
 import os
+import time
+from contextlib import contextmanager
+from threading import Lock
+
 import psycopg
+from psycopg.conninfo import make_conninfo
+from psycopg_pool import ConnectionPool
 from dotenv import load_dotenv
 
 load_dotenv()
-# Connect to an existing database
-def get_connection():
 
-    return psycopg.connect(
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT"),
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD")
-    )
+# One pool per backend process. Connections are opened lazily and reused.
+_pool = None
+_pool_lock = Lock()
+
+
+def _get_pool():
+    global _pool
+    if _pool is None:
+        with _pool_lock:
+            if _pool is None:
+                conninfo = make_conninfo(
+                    "",
+                    host=os.getenv("DB_HOST"),
+                    port=os.getenv("DB_PORT"),
+                    dbname=os.getenv("DB_NAME"),
+                    user=os.getenv("DB_USER"),
+                    password=os.getenv("DB_PASSWORD"),
+                )
+                _pool = ConnectionPool(
+                    conninfo=conninfo,
+                    min_size=1,
+                    max_size=5,
+                    timeout=15,
+                    open=True,
+                )
+    return _pool
+
+
+@contextmanager
+def get_connection():
+    # Automatically commits/rolls back and returns connection to pool.
+    with _get_pool().connection() as conn:
+        yield conn
 
 
 def search_students(search):
@@ -398,14 +428,19 @@ def get_all_students(
         {where_clause}
     """
 
+    connection_start = time.perf_counter()
     with get_connection() as conn:
+        print(f"DB connection checkout: {time.perf_counter() - connection_start:.3f}s", flush=True)
         with conn.cursor() as cur:
+            count_start = time.perf_counter()
             cur.execute(
                 f"SELECT COUNT(*) {base_query}",
                 tuple(params)
             )
             total = cur.fetchone()[0]
+            print(f"COUNT query: {time.perf_counter() - count_start:.3f}s", flush=True)
 
+            select_start = time.perf_counter()
             cur.execute(
                 f"""
                 SELECT
@@ -424,13 +459,12 @@ def get_all_students(
                 """,
                 tuple(params + [page_size, offset])
             )
-
             columns = [desc[0] for desc in cur.description]
-
             students = [
                 dict(zip(columns, row))
                 for row in cur.fetchall()
             ]
+            print(f"SELECT query: {time.perf_counter() - select_start:.3f}s", flush=True)
 
     return {
         "students": students,
@@ -549,8 +583,7 @@ def expire_tag(tag_id):
             return tag_id
 
 def edit_student_belt(student_id, belt):
-    conn = get_connection()
-    try:
+    with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(
                 """
@@ -562,10 +595,7 @@ def edit_student_belt(student_id, belt):
                 (belt, student_id)
             )
             updated = cur.fetchone()
-        conn.commit()
-        return updated is not None
-    finally:
-        conn.close()
+            return updated is not None
 
 def finalize_day():
     with get_connection() as conn:

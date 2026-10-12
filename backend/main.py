@@ -323,7 +323,7 @@ def update_debrief(session_id: int, data: DebriefUpdate):
 # --------------------------------------------------
 
 
-
+import time
 @protected.get("/students")
 def all_students(
     page: int = Query(1, ge=1),
@@ -337,7 +337,8 @@ def all_students(
     attendance: str = "all",
     sort_by: str = "name",
 ):
-    return get_all_students(
+    start = time.perf_counter()
+    res = get_all_students(
         page=page,
         page_size=page_size,
         search=search,
@@ -349,6 +350,12 @@ def all_students(
         attendance=attendance,
         sort_by=sort_by,
     )
+
+    print("VERSION_CHECK_OCT12_SEARCH_FIX", flush=True)
+    print(f"Received search: {search!r}", flush=True)
+
+    return res
+
 
 
 
