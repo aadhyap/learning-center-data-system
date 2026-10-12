@@ -72,6 +72,8 @@ function App() {
   useEffect(() => {
     if (!googleToken) return;
 
+    console.log("ALL STUDENTS:", students);
+
     loadTodayStudents();
   }, [googleToken]);
 

@@ -68,6 +68,10 @@ function TodayStudents({
     }
   }
 
+  const completedDebriefs = todayStudents.filter(
+  (student) => student.debrief_completed === true
+).length;
+
   return (
     <div className="today-page">
       <div className="page-header today-page-header">
@@ -85,10 +89,18 @@ function TodayStudents({
         </button>
       </div>
 
+      
       <div className="today-dashboard">
         <div>
           <p>Students Checked In Today</p>
           <h2>{todayStudents.length}</h2>
+        </div>
+
+        <div>
+          <p>Debriefs Completed</p>
+          <h2>
+            {completedDebriefs} / {todayStudents.length}
+          </h2>
         </div>
 
         <div className="today-save">
@@ -103,6 +115,7 @@ function TodayStudents({
           </button>
         </div>
       </div>
+
 
       {error && <p className="error-message">{error}</p>}
 

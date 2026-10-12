@@ -19,6 +19,7 @@ function TodayDetailsCard({
   const [savingSession, setSavingSession] = useState(false);
 
   const [formData, setFormData] = useState({
+  email: student.email || "",
   belt: student.belt || "",
   notes: student.notes || "",
   achievements: student.achievements || "",
@@ -50,6 +51,7 @@ function TodayDetailsCard({
   // Synchronize editable session fields.
   useEffect(() => {
     setFormData({
+      email: student.email || "",
       belt: student.belt || "",
       notes: student.notes || "",
       achievements: student.achievements || "",
@@ -248,22 +250,25 @@ async function handleSave() {
         <div className="today-card-content">
 
 
+          
           <div className="today-field">
-            <label className="detail-label" htmlFor={`debrief-${student.session_id}`}>
-              Debrief Method
+            <label
+              className="detail-label"
+              htmlFor={`email-${student.session_id}`}
+            >
+              Parent Email
             </label>
 
-            <select
-              id={`debrief-${student.session_id}`}
-              name="debrief_method"
-              value={formData.debrief_method}
+            <input
+              id={`email-${student.session_id}`}
+              type="email"
+              name="email"
+              value={formData.email}
               onChange={handleChange}
-            >
-              <option value="">Not Set</option>
-              <option value="in_person">In Person</option>
-              <option value="email">Email</option>
-            </select>
+              placeholder="Enter parent email..."
+            />
           </div>
+
 
           <div className="today-belt">
             <label className="detail-label">
