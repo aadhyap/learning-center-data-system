@@ -202,3 +202,30 @@ export async function getStudentTags(studentId) {
 
   return response.json();
 }
+
+
+export async function updateSessionDebrief(
+  sessionId,
+  debriefCompleted
+) {
+  const response = await authFetch(
+    `/sessions/${sessionId}/debrief`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        debrief_completed: debriefCompleted
+      })
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to update debrief (${response.status})`
+    );
+  }
+
+  return response.json();
+}

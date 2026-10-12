@@ -229,6 +229,31 @@ def edit_session(
                 debrief_completed,
                 session_id
             ))
+
+'''
+Setting Debrief
+'''
+def update_session_debrief(session_id, debrief_completed):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE sessions
+                SET debrief_completed = %s
+                WHERE session_id = %s
+                  AND finalized = FALSE
+                RETURNING session_id, debrief_completed;
+            """, (debrief_completed, session_id))
+
+            result = cur.fetchone()
+
+            if result is None:
+                return None
+
+            return {
+                "session_id": result[0],
+                "debrief_completed": result[1]
+            }
+
 '''
 Can Check In Student by student_id, create a new session  
 '''

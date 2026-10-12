@@ -32,14 +32,16 @@ export function useTodayStudents() {
 }
 
   async function loadTodayStudents() {
-    try {
-      const data = await getTodayStudents();
-      setTodayStudents(data);
-    } catch (error) {
-      console.error("Error loading today's students:", error);
-    }
-  }
+  try {
+    const data = await getTodayStudents();
 
+    console.log("TODAY STUDENTS FROM API:", data);
+
+    setTodayStudents(data);
+  } catch (error) {
+    console.error("Error loading today's students:", error);
+  }
+}
 
   async function checkIn(studentId) {
   const temporarySession = {

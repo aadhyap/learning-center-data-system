@@ -1,147 +1,224 @@
-import { useEffect, useState } from "react";
-import { updateStudentBelt } from "../api/api";
+
+import { useEffect, useRef, useState } from "react";
+import {
+  updateStudentBelt,
+  updateSessionDebrief
+} from "../api/api";
 import StudentTags from "./StudentTags";
 import { useStudentTags } from "../queries/useStudentTags";
 
-
 function TodayDetailsCard({
   student,
-  onSave, 
+  onSave,
   onRefresh
 }) {
+  const { tags } = useStudentTags(student.student_id);
 
-const { tags, loadTags } = useStudentTags(student.student_id);
-const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [savingDebrief, setSavingDebrief] = useState(false);
+  const [savingSession, setSavingSession] = useState(false);
 
   const [formData, setFormData] = useState({
     belt: student.belt || "",
     notes: student.notes || "",
     achievements: student.achievements || "",
-    next_session: student.next_session || "",
-    debrief_completed: student.debrief_completed || false
+    next_session: student.next_session || ""
   });
 
+  const [debriefCompleted, setDebriefCompleted] = useState(
+    student.debrief_completed === true
+  );
+
+  const debriefStatusRef = useRef(
+    student.debrief_completed === true
+  );
+
+  const savingDebriefRef = useRef(false);
+
+  // Restore the saved debrief status when a different
+  // session loads or fresh student data arrives.
   useEffect(() => {
-  setFormData({
-    belt: student.belt || "",
-    notes: student.notes || "",
-    achievements: student.achievements || "",
-    next_session: student.next_session || "",
-    debrief_completed: student.debrief_completed || false
-  });
-}, [student]);
+    if (!savingDebriefRef.current) {
+      const savedStatus = student.debrief_completed === true;
+
+      debriefStatusRef.current = savedStatus;
+      setDebriefCompleted(savedStatus);
+    }
+  }, [student.session_id, student.debrief_completed]);
+
+  // Synchronize editable session fields.
+  useEffect(() => {
+    setFormData({
+      belt: student.belt || "",
+      notes: student.notes || "",
+      achievements: student.achievements || "",
+      next_session: student.next_session || ""
+    });
+  }, [
+    student.session_id,
+    student.belt,
+    student.notes,
+    student.achievements,
+    student.next_session
+  ]);
 
   function handleChange(event) {
     const { name, value } = event.target;
 
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value
-    });
+    }));
   }
 
-  function toggleDebrief(event) {
-    // Don't open/close the card when clicking the toggle
+  async function toggleDebrief(event) {
     event.stopPropagation();
 
-    setFormData({
-      ...formData,
-      debrief_completed: !formData.debrief_completed
-    });
-  }
-
-  
-async function handleSave() {
-  const sessionData = {
-    notes: formData.notes,
-    achievements: formData.achievements,
-    next_session: formData.next_session,
-    debrief_completed: formData.debrief_completed
-  };
-
-  // Save belt first, before updating session state
-  if (formData.belt !== student.belt) {
-    try {
-      await updateStudentBelt(
-        student.student_id,
-        formData.belt
-      );
-    } catch (error) {
-      console.error("Failed to update belt:", error);
+    if (savingDebriefRef.current || savingSession) {
       return;
+    }
+
+    const previousStatus = debriefStatusRef.current;
+    const newStatus = !previousStatus;
+
+    // Update the UI immediately.
+    debriefStatusRef.current = newStatus;
+    setDebriefCompleted(newStatus);
+
+    savingDebriefRef.current = true;
+    setSavingDebrief(true);
+
+    try {
+      const result = await updateSessionDebrief(
+        student.session_id,
+        newStatus
+      );
+
+      const savedStatus = result.debrief_completed;
+
+      if (typeof savedStatus !== "boolean") {
+        throw new Error("Invalid debrief status from API");
+      }
+
+      debriefStatusRef.current = savedStatus;
+      setDebriefCompleted(savedStatus);
+
+      console.log("Debrief saved:", {
+        session_id: student.session_id,
+        debrief_completed: savedStatus
+      });
+
+    } catch (error) {
+      // Roll back if the request fails.
+      debriefStatusRef.current = previousStatus;
+      setDebriefCompleted(previousStatus);
+
+      console.error("Failed to save debrief:", error);
+      alert("Could not save debrief status.");
+
+    } finally {
+      savingDebriefRef.current = false;
+      setSavingDebrief(false);
     }
   }
 
-  // Save today's session
-  const sessionSaved = await onSave(
-    student.session_id,
-    sessionData
-  );
+  async function handleSave() {
+    if (savingSession || savingDebriefRef.current) {
+      return;
+    }
 
-  if (!sessionSaved) {
-    console.error("Failed to save session");
-    return;
+    setSavingSession(true);
+
+    try {
+      // Save the belt if it changed.
+      if (formData.belt !== student.belt) {
+        await updateStudentBelt(
+          student.student_id,
+          formData.belt
+        );
+      }
+
+      const sessionData = {
+        notes: formData.notes,
+        achievements: formData.achievements,
+        next_session: formData.next_session,
+        debrief_completed: debriefStatusRef.current
+      };
+
+      const sessionSaved = await onSave(
+        student.session_id,
+        sessionData
+      );
+
+      if (!sessionSaved) {
+        throw new Error("Failed to save session");
+      }
+
+      await onRefresh();
+
+      console.log("Session and belt saved!");
+
+    } catch (error) {
+      console.error("Failed to save session:", error);
+      alert("Could not save session changes.");
+
+    } finally {
+      setSavingSession(false);
+    }
   }
-
-  // Retrieve the updated belt and session information
-  await onRefresh();
-
-  console.log("Session and belt saved!");
-}
-
 
   return (
     <div
       className={`today-details-card ${
-        formData.debrief_completed ? "debrief-complete" : ""
+        debriefCompleted ? "debrief-complete" : ""
       }`}
     >
-
       <div
         className="today-card-header"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen((prev) => !prev)}
       >
         <div className="today-student-title">
-                <h2>
-                {student.first_name} {student.last_name}
-                </h2>
+          <h2>
+            {student.first_name} {student.last_name}
+          </h2>
 
-                <span className="today-program">
-                {student.program}
-                </span>
+          <span className="today-program">
+            {student.program}
+          </span>
 
-                <span className="today-belt-label">
-                 Belt: {student.belt}
-                </span>
+          <span className="today-belt-label">
+            Belt: {student.belt}
+          </span>
 
-                <StudentTags tags={tags} />
+          <StudentTags tags={tags} />
 
-                
-
-                <span className="today-belt-label">
-                 {student.email}
-                </span>
+          <span className="today-belt-label">
+            {student.email}
+          </span>
         </div>
 
         <div className="today-card-header-right">
-
           <div className="debrief-control">
             <span className="today-belt-label">
-                  {student.debrief_method === "in_person"
-                  ? "In Person"
-                  : student.debrief_method === "email"
-                  ? "Email"
-                  : "Not Set"}
-                </span>
+              {student.debrief_method === "in_person"
+                ? "In Person"
+                : student.debrief_method === "email"
+                ? "Email"
+                : "Not Set"}
+            </span>
+
             <span className="detail-label">
               Debrief Complete
             </span>
 
             <button
               className={`checkin-toggle ${
-                formData.debrief_completed ? "active" : ""
+                debriefCompleted ? "active" : ""
               }`}
               onClick={toggleDebrief}
+              disabled={savingDebrief || savingSession}
+              aria-pressed={debriefCompleted}
+              aria-label="Toggle debrief completion"
               type="button"
             >
               <span className="toggle-circle"></span>
@@ -151,13 +228,11 @@ async function handleSave() {
           <span className="collapse-arrow">
             {isOpen ? "▲" : "▼"}
           </span>
-
         </div>
       </div>
 
       {isOpen && (
         <div className="today-card-content">
-
           <div className="today-belt">
             <label className="detail-label">
               Belt
@@ -213,15 +288,14 @@ async function handleSave() {
             <button
               className="back-button"
               onClick={handleSave}
+              disabled={savingSession || savingDebrief}
               type="button"
             >
-              Update
+              {savingSession ? "Saving..." : "Update"}
             </button>
           </div>
-
         </div>
       )}
-
     </div>
   );
 }

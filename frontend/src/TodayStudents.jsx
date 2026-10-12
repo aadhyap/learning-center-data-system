@@ -15,6 +15,10 @@ function TodayStudents({
   const [error, setError] = useState("");
 
   useEffect(() => {
+  loadTodayStudents();
+}, []);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       setNow(new Date());
     }, 30000);

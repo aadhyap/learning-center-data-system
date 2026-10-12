@@ -18,6 +18,7 @@ from db import (
     get_student_history,
     get_all_students,
     edit_session,
+    update_session_debrief,
     edit_student_belt,
     delete_session,
     get_active_student_tags,
@@ -113,6 +114,9 @@ class SessionUpdate(BaseModel):
     achievements: str | None = None
     notes: str | None = None
     debrief_completed: bool = False
+
+class DebriefUpdate(BaseModel):
+    debrief_completed: bool
 
 
 class TagCreate(BaseModel):
@@ -273,6 +277,45 @@ def update_session(session_id: int, session: SessionUpdate):
     )
 
     return {"message": "Session updated"}
+
+
+# --------------------------------------------------
+# Update Debrief
+# --------------------------------------------------
+@protected.patch("/sessions/{session_id}/debrief")
+def update_debrief(session_id: int, data: DebriefUpdate):
+    result = update_session_debrief(
+        session_id,
+        data.debrief_completed
+    )
+
+    if result is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Session not found or already finalized"
+        )
+
+    return result
+
+
+# --------------------------------------------------
+# Debrief
+# --------------------------------------------------
+@protected.patch("/sessions/{session_id}/debrief")
+def update_debrief(session_id: int, data: DebriefUpdate):
+    result = update_session_debrief(
+        session_id,
+        data.debrief_completed
+    )
+
+    if result is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Session not found or already finalized"
+        )
+
+    return result
+
 
 
 # --------------------------------------------------
