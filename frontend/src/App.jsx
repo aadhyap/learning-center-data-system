@@ -87,10 +87,16 @@ function App() {
   }
 
   // Reset pagination when filters change
-  function updateFilters(updater) {
-    setStudentPage(1);
-    setFilters(updater);
-  }
+function updateFilters(updater) {
+  setStudentPage(1);
+
+  setFilters((previous) => ({
+    ...previous,
+    ...(typeof updater === "function"
+      ? updater(previous)
+      : updater)
+  }));
+}
 
   // Open student profile
   function onSelectStudent(student) {
@@ -230,7 +236,7 @@ function App() {
             )}
 
             <StudentList
-              students={students}
+              students={filteredStudents}
               todayStudents={todayStudents}
               onCheckIn={handleCheckIn}
               onCheckOut={handleCheckOut}
