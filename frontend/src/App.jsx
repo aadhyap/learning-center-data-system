@@ -52,7 +52,6 @@ function App() {
     saveStudent,
     createStudent
   } = useStudents();
-  const filteredStudents = filterStudents(students, filters);
 
   // Today's students
   const {
