@@ -25,8 +25,15 @@ export async function authFetch(path, options = {}) {
     headers.set("Authorization", `Bearer ${googleToken}`);
   }
 
-  return fetch(`${API_URL}${path}`, {
+  const response = await fetch(`${API_URL}${path}`, {
     ...options,
     headers
   });
+
+  if (response.status === 401) {
+    setAuthToken(null);
+    window.location.reload();
+  }
+
+  return response;
 }
