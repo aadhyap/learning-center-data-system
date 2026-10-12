@@ -35,7 +35,6 @@ export function useTodayStudents() {
   try {
     const data = await getTodayStudents();
 
-    console.log("TODAY STUDENTS FROM API:", data);
 
     setTodayStudents(data);
   } catch (error) {

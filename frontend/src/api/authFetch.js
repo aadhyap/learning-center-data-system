@@ -1,9 +1,22 @@
+
 const API_URL = import.meta.env.VITE_API_URL;
 
-let googleToken = null;
+const TOKEN_KEY = "student_progress_google_token";
+
+let googleToken = sessionStorage.getItem(TOKEN_KEY);
+
+export function getAuthToken() {
+  return googleToken;
+}
 
 export function setAuthToken(token) {
   googleToken = token;
+
+  if (token) {
+    sessionStorage.setItem(TOKEN_KEY, token);
+  } else {
+    sessionStorage.removeItem(TOKEN_KEY);
+  }
 }
 
 export async function authFetch(path, options = {}) {
@@ -13,10 +26,8 @@ export async function authFetch(path, options = {}) {
     headers.set("Authorization", `Bearer ${googleToken}`);
   }
 
-  const response = await fetch(`${API_URL}${path}`, {
+  return fetch(`${API_URL}${path}`, {
     ...options,
     headers
   });
-
-  return response;
 }

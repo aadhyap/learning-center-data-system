@@ -2,7 +2,10 @@
 import { useEffect, useState } from "react";
 import { useStudents } from "./queries/useStudents";
 import { useTodayStudents } from "./queries/useTodayStudents";
-import { setAuthToken } from "./api/authFetch";
+import {
+  getAuthToken,
+  setAuthToken
+} from "./api/authFetch";
 import "./App.css";
 
 import StudentList from "./components/StudentList";
@@ -29,7 +32,9 @@ function App() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [page, setPage] = useState("students");
   const [showAddStudent, setShowAddStudent] = useState(false);
-  const [googleToken, setGoogleToken] = useState(null);
+  const [googleToken, setGoogleToken] = useState(
+    () => getAuthToken()
+  );
 
   // Student data and pagination
   const {
@@ -72,7 +77,6 @@ function App() {
   useEffect(() => {
     if (!googleToken) return;
 
-    console.log("ALL STUDENTS:", students);
 
     loadTodayStudents();
   }, [googleToken]);
