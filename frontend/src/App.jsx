@@ -6,7 +6,6 @@ import {
   getAuthToken,
   setAuthToken
 } from "./api/authFetch";
-import { filterStudents } from "./utils/filterStudents";
 import "./App.css";
 
 import StudentList from "./components/StudentList";
@@ -29,7 +28,7 @@ function App() {
     attendance: "all",
     sortBy: "name"
   });
-
+ const [searchInput, setSearchInput] = useState("");
   // Navigation
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [page, setPage] = useState("students");
@@ -52,7 +51,6 @@ function App() {
     saveStudent,
     createStudent
   } = useStudents();
-  const filteredStudents = filterStudents(students, filters);
 
   // Today's students
   const {
@@ -62,6 +60,19 @@ function App() {
     checkOut,
     saveSession
   } = useTodayStudents();
+
+  useEffect(() => {
+  const timer = setTimeout(() => {
+    if (searchInput !== filters.search) {
+      updateFilters((previous) => ({
+        ...previous,
+        search: searchInput
+      }));
+    }
+  }, 350);
+
+  return () => clearTimeout(timer);
+}, [searchInput, filters.search]);
 
   // Load students when login, page, size, or filters change
   useEffect(() => {
@@ -191,18 +202,16 @@ function updateFilters(updater) {
             className="search"
             type="text"
             placeholder="Search students..."
-            value={filters.search}
-            onChange={(event) =>
-              updateFilters((previous) => ({
-                ...previous,
-                search: event.target.value
-              }))
-            }
+            value={searchInput}
+            onChange={(event) => setSearchInput(event.target.value)}
           />
 
           <StudentFilters
             filters={filters}
-            setFilters={updateFilters}
+            setFilters={(updater) => {
+              setSearchInput("");
+              updateFilters(updater);
+            }}
           />
         </aside>
       )}
@@ -239,7 +248,7 @@ function updateFilters(updater) {
             )}
 
             <StudentList
-              students={filteredStudents}
+              students={students}
               todayStudents={todayStudents}
               onCheckIn={handleCheckIn}
               onCheckOut={handleCheckOut}

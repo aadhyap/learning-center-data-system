@@ -28,7 +28,6 @@ export function useStudents() {
     try {
       const data = await getStudents(page, size, filters);
 
-      console.log("Students API response:", data);
 
       let studentList;
       let total;
