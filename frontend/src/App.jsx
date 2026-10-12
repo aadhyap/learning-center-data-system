@@ -6,6 +6,7 @@ import {
   getAuthToken,
   setAuthToken
 } from "./api/authFetch";
+import { filterStudents } from "./utils/filterStudents";
 import "./App.css";
 
 import StudentList from "./components/StudentList";
@@ -14,6 +15,7 @@ import TodayStudents from "./TodayStudents";
 import AddStudent from "./components/AddStudent";
 import Login from "./components/Auth/Login";
 import StudentFilters from "./components/StudentFilters";
+
 
 function App() {
   // Filters
