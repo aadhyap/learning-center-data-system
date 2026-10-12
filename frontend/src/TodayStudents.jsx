@@ -110,20 +110,28 @@ function TodayStudents({
         {todayStudents.length === 0 ? (
           <p>No students checked in today.</p>
         ) : (
-          todayStudents.map((student) => (
-            <TodayDetailsCard
-              key={student.session_id}
-              student={student}
-              onSave={onSaveSession}
-              onRefresh={async () => {
-                await Promise.all([
-                  loadTodayStudents(),
-                  loadStudents()
-                ]);
-              }}
-            />
-          ))
-        )}
+          
+          [...todayStudents]
+            .sort((a, b) => {
+              const timeA = new Date(a.session_date).getTime();
+              const timeB = new Date(b.session_date).getTime();
+
+              return timeB - timeA;
+            })
+            .map((student) => (
+              <TodayDetailsCard
+                key={student.session_id}
+                student={student}
+                onSave={onSaveSession}
+                onRefresh={async () => {
+                  await Promise.all([
+                    loadTodayStudents(),
+                    loadStudents()
+                  ]);
+                }}
+              />
+            ))
+          )}
       </div>
     </div>
   );

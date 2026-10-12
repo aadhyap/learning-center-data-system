@@ -19,11 +19,12 @@ function TodayDetailsCard({
   const [savingSession, setSavingSession] = useState(false);
 
   const [formData, setFormData] = useState({
-    belt: student.belt || "",
-    notes: student.notes || "",
-    achievements: student.achievements || "",
-    next_session: student.next_session || ""
-  });
+  belt: student.belt || "",
+  notes: student.notes || "",
+  achievements: student.achievements || "",
+  next_session: student.next_session || "",
+  debrief_method: student.debrief_method || ""
+});
 
   const [debriefCompleted, setDebriefCompleted] = useState(
     student.debrief_completed === true
@@ -93,6 +94,7 @@ function TodayDetailsCard({
         student.session_id,
         newStatus
       );
+      await onRefresh();
 
       const savedStatus = result.debrief_completed;
 
@@ -122,51 +124,60 @@ function TodayDetailsCard({
     }
   }
 
-  async function handleSave() {
-    if (savingSession || savingDebriefRef.current) {
-      return;
-    }
-
-    setSavingSession(true);
-
-    try {
-      // Save the belt if it changed.
-      if (formData.belt !== student.belt) {
-        await updateStudentBelt(
-          student.student_id,
-          formData.belt
-        );
-      }
-
-      const sessionData = {
-        notes: formData.notes,
-        achievements: formData.achievements,
-        next_session: formData.next_session,
-        debrief_completed: debriefStatusRef.current
-      };
-
-      const sessionSaved = await onSave(
-        student.session_id,
-        sessionData
-      );
-
-      if (!sessionSaved) {
-        throw new Error("Failed to save session");
-      }
-
-      await onRefresh();
-
-      console.log("Session and belt saved!");
-
-    } catch (error) {
-      console.error("Failed to save session:", error);
-      alert("Could not save session changes.");
-
-    } finally {
-      setSavingSession(false);
-    }
+  
+async function handleSave() {
+  if (savingSession || savingDebriefRef.current) {
+    return;
   }
 
+  setSavingSession(true);
+
+  try {
+    if (formData.belt !== student.belt) {
+      await updateStudentBelt(
+        student.student_id,
+        formData.belt
+      );
+    }
+
+    const sessionData = {
+      notes: formData.notes,
+      achievements: formData.achievements,
+      next_session: formData.next_session,
+      debrief_method: formData.debrief_method,
+      debrief_completed: debriefStatusRef.current
+    };
+
+    const sessionSaved = await onSave(
+      student.session_id,
+      sessionData
+    );
+
+    if (!sessionSaved) {
+      throw new Error("Server did not confirm save");
+    }
+
+    await onRefresh();
+
+    window.alert(
+      `Changes for ${student.first_name} ${student.last_name} were sent successfully!`
+    );
+
+  } catch (error) {
+    console.error("Failed to save session:", error);
+
+    window.alert(
+      `Save failed for ${student.first_name} ${student.last_name}.\n\n` +
+      "Your changes may not have been saved. Please try again."
+    );
+
+  } finally {
+    setSavingSession(false);
+  }
+}
+
+
+   
   return (
     <div
       className={`today-details-card ${
@@ -231,8 +242,29 @@ function TodayDetailsCard({
         </div>
       </div>
 
+      
+
       {isOpen && (
         <div className="today-card-content">
+
+
+          <div className="today-field">
+            <label className="detail-label" htmlFor={`debrief-${student.session_id}`}>
+              Debrief Method
+            </label>
+
+            <select
+              id={`debrief-${student.session_id}`}
+              name="debrief_method"
+              value={formData.debrief_method}
+              onChange={handleChange}
+            >
+              <option value="">Not Set</option>
+              <option value="in_person">In Person</option>
+              <option value="email">Email</option>
+            </select>
+          </div>
+
           <div className="today-belt">
             <label className="detail-label">
               Belt
