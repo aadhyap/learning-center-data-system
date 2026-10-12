@@ -29,7 +29,6 @@ function App() {
     attendance: "all",
     sortBy: "name"
   });
-  const filteredStudents = filterStudents(students, filters);
 
   // Navigation
   const [selectedStudent, setSelectedStudent] = useState(null);
@@ -53,6 +52,7 @@ function App() {
     saveStudent,
     createStudent
   } = useStudents();
+  const filteredStudents = filterStudents(students, filters);
 
   // Today's students
   const {
