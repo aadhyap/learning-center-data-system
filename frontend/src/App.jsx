@@ -27,6 +27,7 @@ function App() {
     attendance: "all",
     sortBy: "name"
   });
+  const filteredStudents = filterStudents(students, filters);
 
   // Navigation
   const [selectedStudent, setSelectedStudent] = useState(null);
