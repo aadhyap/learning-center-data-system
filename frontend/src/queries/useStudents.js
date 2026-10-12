@@ -28,11 +28,28 @@ export function useStudents() {
     try {
       const data = await getStudents(page, size, filters);
 
-      setStudents(data.students);
-      setTotalStudents(data.total);
+      console.log("Students API response:", data);
+
+      let studentList;
+      let total;
+
+      if (Array.isArray(data)) {
+        studentList = data;
+        total = data.length;
+      } else if (data && Array.isArray(data.students)) {
+        studentList = data.students;
+        total = Number(data.total ?? data.students.length);
+      } else {
+        throw new Error("Unexpected students API response format");
+      }
+
+      setStudents(studentList);
+      setTotalStudents(total);
     } catch (err) {
       console.error("Error loading students:", err);
-      setError("Failed to load students.");
+      setStudents([]);
+      setTotalStudents(0);
+      setError(err.message || "Failed to load students.");
     } finally {
       setIsLoading(false);
     }
