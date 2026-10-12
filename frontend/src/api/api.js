@@ -1,14 +1,4 @@
-import { authFetch } from "./authFetch";
-
-export async function getStudents() {
-  const response = await authFetch(`/students`);
-
-  if (!response.ok) {
-    throw new Error("Failed to load students");
-  }
-
-  return response.json();
-}
+import { authFetch } from "./authFetch"
 
 export async function getTodayStudents() {
   const response = await authFetch(`/students/today`);
@@ -117,17 +107,38 @@ export async function updateSession(sessionId, sessionData) {
   return response.json();
 }
 
-export async function getStudentTags(studentId) {
+
+export async function getStudents(
+  page = 1,
+  pageSize = 25,
+  filters = {}
+) {
+  const params = new URLSearchParams({
+    page: String(page),
+    page_size: String(pageSize),
+    search: filters.search || "",
+    program: filters.program || "all",
+    belt_color: filters.beltColor || "all",
+    track: filters.track || "all",
+    rank: filters.rank || "all",
+    robotics_level: filters.roboticsLevel || "all",
+    attendance: filters.attendance || "all",
+    sort_by: filters.sortBy || "name"
+  });
+
   const response = await authFetch(
-    `/students/${studentId}/tags`
+    `/students?${params.toString()}`
   );
 
   if (!response.ok) {
-    throw new Error("Failed to load student tags");
+    throw new Error(
+      `Failed to load students (${response.status})`
+    );
   }
 
   return response.json();
 }
+
 
 
 export async function addStudentTag(studentId, tagName) {
@@ -173,6 +184,20 @@ export async function updateStudentBelt(studentId, belt) {
 
   if (!response.ok) {
     throw new Error("Failed to update belt");
+  }
+
+  return response.json();
+}
+
+export async function getStudentTags(studentId) {
+  const response = await authFetch(
+    `/students/${studentId}/tags`
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to load student tags (${response.status})`
+    );
   }
 
   return response.json();

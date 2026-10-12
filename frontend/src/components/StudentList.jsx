@@ -1,6 +1,11 @@
+
 import { useStudentTags } from "../queries/useStudentTags";
 import StudentTags from "./StudentTags";
-import { CalendarDays, ArrowLeft} from "lucide-react";
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight
+} from "lucide-react";
 
 function timeAgo(date) {
   if (!date) return "Never";
@@ -22,7 +27,11 @@ function timeAgo(date) {
   return `${months} months ago`;
 }
 
-// Each student card fetches its own active tags.
+
+// --------------------------------------------------
+// Student Card
+// --------------------------------------------------
+
 function StudentCard({
   student,
   todaySession,
@@ -47,7 +56,6 @@ function StudentCard({
           {student.first_name} {student.last_name}
         </h2>
 
-        {/* ACTIVE TAGS */}
         <StudentTags tags={tags} />
       </div>
 
@@ -96,15 +104,42 @@ function StudentCard({
   );
 }
 
+
+// --------------------------------------------------
+// Student List with server-side pagination
+// --------------------------------------------------
+
 function StudentList({
-  students,
-  todayStudents,
+  students = [],
+  todayStudents = [],
   onCheckIn,
   onCheckOut,
   onSelectStudent,
   onAddStudent,
-  onViewToday
+  onViewToday,
+
+  // Pagination props supplied by parent
+  page = 1,
+  pageSize = 25,
+  totalStudents = 0,
+  onPageChange,
+  onPageSizeChange,
+  isLoading = false
 }) {
+  const totalPages = Math.max(
+    1,
+    Math.ceil(totalStudents / pageSize)
+  );
+
+  const start = totalStudents === 0
+    ? 0
+    : (page - 1) * pageSize + 1;
+
+  const end = Math.min(
+    page * pageSize,
+    totalStudents
+  );
+
   return (
     <>
       <div className="page-header">
@@ -113,45 +148,102 @@ function StudentList({
           <p>View and manage student progress</p>
         </div>
 
-              <div className="student-header-actions">
+        <div className="student-header-actions">
+          <button
+            className="today-students-button"
+            onClick={onViewToday}
+            type="button"
+          >
+            <CalendarDays size={16} />
+            Today's Students
+          </button>
+
+          <button
+            className="add-student-button"
+            onClick={onAddStudent}
+            type="button"
+          >
+            + Add Student
+          </button>
+        </div>
+      </div>
+
+      {/* Pagination summary and page-size selector */}
+      <div className="student-pagination-toolbar">
+        <span>
+          {isLoading
+            ? "Loading students..."
+            : `Showing ${start}–${end} of ${totalStudents} students`
+          }
+        </span>
+
+        <label>
+          Students per page:{" "}
+          <select
+            value={pageSize}
+            onChange={(e) =>
+              onPageSizeChange?.(Number(e.target.value))
+            }
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+          </select>
+        </label>
+      </div>
+
+      {/* Student cards */}
+      {isLoading ? (
+        <p>Loading students...</p>
+      ) : (
+        <div className="student-list">
+          {students.map(student => {
+            const todaySession = todayStudents.find(
+              todayStudent =>
+                todayStudent.student_id === student.student_id
+            );
+
+            return (
+              <StudentCard
+                key={student.student_id}
+                student={student}
+                todaySession={todaySession}
+                onCheckIn={onCheckIn}
+                onCheckOut={onCheckOut}
+                onSelectStudent={onSelectStudent}
+              />
+            );
+          })}
+
+          {students.length === 0 && (
+            <p>No students found.</p>
+          )}
+        </div>
+      )}
+
+      {/* Previous / Next buttons */}
+      <div className="student-pagination-controls">
         <button
-          className="today-students-button"
-          onClick={onViewToday}
           type="button"
+          disabled={page <= 1 || isLoading}
+          onClick={() => onPageChange?.(page - 1)}
         >
-          <CalendarDays size={16} />
-          Today's Students
-         
+          <ChevronLeft size={16} />
+          Previous
         </button>
 
+        <span>
+          Page {page} of {totalPages}
+        </span>
+
         <button
-          className="add-student-button"
-          onClick={onAddStudent}
           type="button"
+          disabled={page >= totalPages || isLoading}
+          onClick={() => onPageChange?.(page + 1)}
         >
-          + Add Student
+          Next
+          <ChevronRight size={16} />
         </button>
-      </div>
-      </div>
-
-      <div className="student-list">
-        {students.map(student => {
-          const todaySession = todayStudents.find(
-            todayStudent =>
-              todayStudent.student_id === student.student_id
-          );
-
-          return (
-            <StudentCard
-              key={student.student_id}
-              student={student}
-              todaySession={todaySession}
-              onCheckIn={onCheckIn}
-              onCheckOut={onCheckOut}
-              onSelectStudent={onSelectStudent}
-            />
-          );
-        })}
       </div>
     </>
   );

@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useCallback, useState } from "react";
 
 import {
   getStudents,
@@ -9,67 +10,80 @@ import {
 
 export function useStudents() {
   const [students, setStudents] = useState([]);
+  const [totalStudents, setTotalStudents] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [studentPage, setStudentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+
+  const loadStudents = useCallback(async (
+    page = 1,
+    size = 25,
+    filters = {}
+  ) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const data = await getStudents(page, size, filters);
+
+      setStudents(data.students);
+      setTotalStudents(data.total);
+    } catch (err) {
+      console.error("Error loading students:", err);
+      setError("Failed to load students.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   async function saveStudent(studentId, studentData) {
-  try {
-    await updateStudent(studentId, studentData);
-
-    setStudents((currentStudents) =>
-      currentStudents.map((student) =>
-        student.student_id === studentId
-          ? { ...student, ...studentData }
-          : student
-      )
-    );
-
-    return true;
-
-  } catch (error) {
-    console.error("Error updating student:", error);
-    return false;
-  }
-}
-
-  async function createStudent(studentData, selectedTags = []) {
     try {
-      // Create student in PostgreSQL through the API
-      const newStudent = await addStudent(studentData);
+      await updateStudent(studentId, studentData);
 
-      // Add optional tags to the newly created student
-      for (const tagName of selectedTags) {
-        await addStudentTag(newStudent.student_id, tagName);
-      }
-
-      // Refresh the student list
-      await loadStudents();
+      setStudents((currentStudents) =>
+        currentStudents.map((student) =>
+          student.student_id === studentId
+            ? { ...student, ...studentData }
+            : student
+        )
+      );
 
       return true;
-
-    } catch (error) {
-      console.error("Error creating student:", error);
+    } catch (err) {
+      console.error("Error updating student:", err);
       return false;
     }
   }
 
-
-  async function loadStudents() {
+  async function createStudent(studentData, selectedTags = []) {
     try {
-      const data = await getStudents();
-      setStudents(data);
-    } catch (error) {
-      console.error("Error loading students:", error);
+      const newStudent = await addStudent(studentData);
+
+      for (const tagName of selectedTags) {
+        await addStudentTag(newStudent.student_id, tagName);
+      }
+
+      setStudentPage(1);
+      return true;
+    } catch (err) {
+      console.error("Error creating student:", err);
+      return false;
     }
   }
 
   return {
-  students,
-  loadStudents,
-  saveStudent,
-  createStudent
-};
-  
+    students,
+    totalStudents,
+    isLoading,
+    error,
+    studentPage,
+    setStudentPage,
+    pageSize,
+    setPageSize,
+    loadStudents,
+    saveStudent,
+    createStudent
+  };
 }
-
-
-
-

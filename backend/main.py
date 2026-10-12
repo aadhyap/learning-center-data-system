@@ -6,6 +6,8 @@ from auth import require_auth
 from datetime import datetime, time
 from zoneinfo import ZoneInfo
 from apscheduler.schedulers.background import BackgroundScheduler
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Query
+
 
 from db import (
     search_students,
@@ -277,9 +279,34 @@ def update_session(session_id: int, session: SessionUpdate):
 # Get all students
 # --------------------------------------------------
 
+
+
 @protected.get("/students")
-def all_students():
-    return get_all_students()
+def all_students(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(25, ge=1, le=100),
+    search: str = "",
+    program: str = "all",
+    belt_color: str = "all",
+    track: str = "all",
+    rank: str = "all",
+    robotics_level: str = "all",
+    attendance: str = "all",
+    sort_by: str = "name",
+):
+    return get_all_students(
+        page=page,
+        page_size=page_size,
+        search=search,
+        program=program,
+        belt_color=belt_color,
+        track=track,
+        rank=rank,
+        robotics_level=robotics_level,
+        attendance=attendance,
+        sort_by=sort_by,
+    )
+
 
 
 # --------------------------------------------------

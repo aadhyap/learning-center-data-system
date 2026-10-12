@@ -287,33 +287,134 @@ def check_in_student(student_id):
 
             return None
 
-def get_all_students():
+
+
+def get_all_students(
+    page=1,
+    page_size=25,
+    search="",
+    program="all",
+    belt_color="all",
+    track="all",
+    rank="all",
+    robotics_level="all",
+    attendance="all",
+    sort_by="name",
+):
+    offset = (page - 1) * page_size
+
+    conditions = []
+    params = []
+
+    if search.strip():
+        conditions.append(
+            "(s.first_name || ' ' || s.last_name) ILIKE %s"
+        )
+        params.append(f"%{search.strip()}%")
+
+    if program != "all":
+        conditions.append("LOWER(s.program) = LOWER(%s)")
+        params.append(program)
+
+    if belt_color != "all":
+        conditions.append(
+            "LOWER(SPLIT_PART(s.belt, '_', 1)) = LOWER(%s)"
+        )
+        params.append(belt_color)
+
+    if track != "all":
+        conditions.append(
+            "LOWER(SPLIT_PART(s.belt, '_', 1)) = LOWER(%s)"
+        )
+        params.append(track)
+
+    if rank != "all":
+        conditions.append(
+            "LOWER(SPLIT_PART(s.belt, '_', 2)) = LOWER(%s)"
+        )
+        params.append(rank)
+
+    if robotics_level != "all":
+        conditions.append("s.belt ILIKE %s")
+        params.append(f"%{robotics_level}%")
+
+    if attendance == "never":
+        conditions.append("latest.last_session IS NULL")
+    elif attendance == "attended":
+        conditions.append("latest.last_session IS NOT NULL")
+
+    where_clause = (
+        "WHERE " + " AND ".join(conditions)
+        if conditions else ""
+    )
+
+    if sort_by == "recent":
+        order_clause = (
+            "ORDER BY latest.last_session DESC NULLS LAST, "
+            "s.student_id"
+        )
+    elif sort_by == "oldest":
+        order_clause = (
+            "ORDER BY latest.last_session ASC NULLS LAST, "
+            "s.student_id"
+        )
+    else:
+        order_clause = (
+            "ORDER BY s.first_name, s.last_name, s.student_id"
+        )
+
+    base_query = f"""
+        FROM students s
+        LEFT JOIN LATERAL (
+            SELECT MAX(session_date) AS last_session
+            FROM sessions
+            WHERE student_id = s.student_id
+        ) latest ON TRUE
+        {where_clause}
+    """
+
     with get_connection() as conn:
         with conn.cursor() as cur:
-            cur.execute("""
+            cur.execute(
+                f"SELECT COUNT(*) {base_query}",
+                tuple(params)
+            )
+            total = cur.fetchone()[0]
+
+            cur.execute(
+                f"""
                 SELECT
-                    students.student_id,
-                    students.first_name,
-                    students.last_name,
-                    students.email,
-                    students.program,
-                    students.belt,
-                    students.debrief_method,
-                    students.summary,
-                    MAX(sessions.session_date) AS last_session
-                FROM students
-                LEFT JOIN sessions
-                    ON students.student_id = sessions.student_id
-                GROUP BY students.student_id
-                ORDER BY students.first_name, students.last_name
-            """)
+                    s.student_id,
+                    s.first_name,
+                    s.last_name,
+                    s.email,
+                    s.program,
+                    s.belt,
+                    s.debrief_method,
+                    s.summary,
+                    latest.last_session
+                {base_query}
+                {order_clause}
+                LIMIT %s OFFSET %s
+                """,
+                tuple(params + [page_size, offset])
+            )
 
             columns = [desc[0] for desc in cur.description]
 
-            return [
+            students = [
                 dict(zip(columns, row))
                 for row in cur.fetchall()
             ]
+
+    return {
+        "students": students,
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "total_pages": (total + page_size - 1) // page_size
+    }
+
 '''
 Get all the students that came in Today
 '''
