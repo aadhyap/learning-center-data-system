@@ -25,13 +25,14 @@ function StudentProfile({ student, onBack, onSave }) {
   const [tagToAdd, setTagToAdd] = useState("");
 
   const [formData, setFormData] = useState({
-    first_name: student.first_name,
-    last_name: student.last_name,
-    program: student.program || "",
-    belt: student.belt || "",
-    summary: student.summary || "",
-    debrief_method: student.debrief_method || ""
-  });
+  first_name: student.first_name,
+  last_name: student.last_name,
+  email: student.email || "",
+  program: student.program || "",
+  belt: student.belt || "",
+  summary: student.summary || "",
+  debrief_method: student.debrief_method || ""
+});
 
   // Keep displayed tags synchronized with the backend.
   useEffect(() => {
@@ -45,6 +46,7 @@ function StudentProfile({ student, onBack, onSave }) {
     setFormData({
       first_name: student.first_name,
       last_name: student.last_name,
+      email: student.email || "",
       program: student.program || "",
       belt: student.belt || "",
       summary: student.summary || "",
@@ -56,18 +58,19 @@ function StudentProfile({ student, onBack, onSave }) {
   }, [student.student_id]);
 
   function resetForm() {
-    setFormData({
-      first_name: student.first_name,
-      last_name: student.last_name,
-      program: student.program || "",
-      belt: student.belt || "",
-      summary: student.summary || "",
-      debrief_method: student.debrief_method || ""
-    });
+  setFormData({
+    first_name: student.first_name,
+    last_name: student.last_name,
+    email: student.email || "",
+    program: student.program || "",
+    belt: student.belt || "",
+    summary: student.summary || "",
+    debrief_method: student.debrief_method || ""
+  });
 
-    setSelectedTags(tags.map(tag => tag.tag_name));
-    setTagToAdd("");
-  }
+  setSelectedTags(tags.map(tag => tag.tag_name));
+  setTagToAdd("");
+}
 
   function handleEdit() {
     if (isEditing) {
@@ -110,7 +113,7 @@ function StudentProfile({ student, onBack, onSave }) {
     const updatedStudent = {
       first_name: formData.first_name,
       last_name: formData.last_name,
-      email: student.email,
+      email: formData.email.trim() || null,
       program: formData.program,
       belt: formData.belt,
       debrief_method: formData.debrief_method,
@@ -240,6 +243,28 @@ function StudentProfile({ student, onBack, onSave }) {
           </div>
 
         </div>
+
+
+      {/* EMAIL */}
+      <div className="profile-field">
+        <label className="detail-label" htmlFor="student-email">
+          Email
+        </label>
+
+        {isEditing ? (
+          <input
+            id="student-email"
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Enter student or parent email"
+          />
+        ) : (
+          <p>{student.email || "No email provided"}</p>
+        )}
+      </div>
+
 
         {/* DEBRIEF METHOD */}
         <div className="profile-field">

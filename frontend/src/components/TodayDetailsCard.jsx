@@ -11,7 +11,7 @@ function TodayDetailsCard({
 }) {
 
 const { tags, loadTags } = useStudentTags(student.student_id);
-  const [isOpen, setIsOpen] = useState(true);
+const [isOpen, setIsOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     belt: student.belt || "",
