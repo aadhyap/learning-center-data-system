@@ -14,22 +14,42 @@ function timeAgo(date) {
   if (!date) return "Never";
 
   const lastSession = new Date(date);
-  const today = new Date();
 
-  const difference = today - lastSession;
+  if (Number.isNaN(lastSession.getTime())) {
+    return "Unknown";
+  }
+
+  const timezone = "America/Los_Angeles";
+
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  });
+
+  function calendarDay(value) {
+    const parts = formatter.formatToParts(value);
+
+    const year = Number(parts.find(p => p.type === "year").value);
+    const month = Number(parts.find(p => p.type === "month").value);
+    const day = Number(parts.find(p => p.type === "day").value);
+
+    return Date.UTC(year, month - 1, day);
+  }
+
+  const difference = calendarDay(new Date()) - calendarDay(lastSession);
   const days = Math.floor(difference / (1000 * 60 * 60 * 24));
 
   if (days === 0) return "Today";
   if (days === 1) return "Yesterday";
+  if (days < 0) return "Future date";
   if (days < 30) return `${days} days ago`;
 
   const months = Math.floor(days / 30);
 
-  if (months === 1) return "1 month ago";
-
-  return `${months} months ago`;
+  return months === 1 ? "1 month ago" : `${months} months ago`;
 }
-
 
 // --------------------------------------------------
 // Student Card
