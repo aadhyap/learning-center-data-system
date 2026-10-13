@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import TodayDetailsCard from "./components/TodayDetailsCard";
 import { finalizeDay } from "./api/finalizeDay";
+import { exportToday } from "./api/exportData";
 
 function TodayStudents({
   todayStudents,
@@ -13,6 +14,7 @@ function TodayStudents({
   const [now, setNow] = useState(new Date());
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
   loadTodayStudents();
@@ -45,6 +47,19 @@ function TodayStudents({
 
   const canSave =
     hour === 17 && minute >= 50;
+
+    async function handleExportToday() {
+    setExporting(true);
+    setError("");
+
+    try {
+      await exportToday();
+    } catch (err) {
+      setError(err.message || "Failed to export today's students.");
+    } finally {
+      setExporting(false);
+    }
+  }
 
   async function handleSaveDay() {
     if (!window.confirm("Finalize today's sessions? This cannot be undone.")) {
@@ -79,6 +94,15 @@ function TodayStudents({
           <h1>Today's Students</h1>
           <p>{pacificDate}</p>
         </div>
+
+        <button
+          type="button"
+          className="today-students-button"
+          onClick={handleExportToday}
+          disabled={exporting}
+        >
+          {exporting ? "Exporting..." : "↓ Export Today"}
+        </button>
 
         <button
           className="back-button today-back-button"

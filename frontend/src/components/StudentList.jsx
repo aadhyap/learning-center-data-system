@@ -4,8 +4,11 @@ import StudentTags from "./StudentTags";
 import {
   CalendarDays,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Download
 } from "lucide-react";
+import { useState } from "react";
+import { exportAllData } from "../api/exportData";
 
 function timeAgo(date) {
   if (!date) return "Never";
@@ -126,6 +129,22 @@ function StudentList({
   onPageSizeChange,
   isLoading = false
 }) {
+
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState("");
+
+  async function handleExportAll() {
+    setExporting(true);
+    setExportError("");
+
+    try {
+      await exportAllData();
+    } catch (err) {
+      setExportError(err.message || "Failed to export student data.");
+    } finally {
+      setExporting(false);
+    }
+  }
   const totalPages = Math.max(
     1,
     Math.ceil(totalStudents / pageSize)
@@ -150,6 +169,15 @@ function StudentList({
 
         <div className="student-header-actions">
           <button
+            type="button"
+            className="today-students-button"
+            onClick={handleExportAll}
+            disabled={exporting}
+          >
+            <Download size={16} />
+            {exporting ? "Exporting..." : "Export All Data"}
+          </button>
+          <button
             className="today-students-button"
             onClick={onViewToday}
             type="button"
@@ -167,6 +195,11 @@ function StudentList({
           </button>
         </div>
       </div>
+      {exportError && (
+  <p role="alert" className="error-message">
+    {exportError}
+  </p>
+)}
 
       {/* Pagination summary and page-size selector */}
       <div className="student-pagination-toolbar">
