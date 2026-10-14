@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useStudents } from "./queries/useStudents";
 import { useTodayStudents } from "./queries/useTodayStudents";
@@ -14,6 +15,7 @@ import TodayStudents from "./TodayStudents";
 import AddStudent from "./components/AddStudent";
 import Login from "./components/Auth/Login";
 import StudentFilters from "./components/StudentFilters";
+import Dashboard from "./components/Dashboard";
 
 function App() {
   const [filters, setFilters] = useState({
@@ -27,7 +29,7 @@ function App() {
     sortBy: "name"
   });
 
-  // The input changes immediately; only the API search is debounced.
+  // Input updates immediately, but API search waits 350ms.
   const debouncedSearch = useDebounce(filters.search, 350);
 
   const [selectedStudent, setSelectedStudent] = useState(null);
@@ -57,7 +59,11 @@ function App() {
     saveSession
   } = useTodayStudents();
 
-  // Program/belt/etc. changes take effect immediately; search waits 350 ms.
+  // --------------------------------------------------
+  // Load students when filters or pagination change.
+  // Preserve the existing 350ms search debounce.
+  // --------------------------------------------------
+
   useEffect(() => {
     if (!googleToken || filters.search !== debouncedSearch) return;
 
@@ -81,10 +87,83 @@ function App() {
     loadStudents
   ]);
 
+  // --------------------------------------------------
+  // Initial load of today's students.
+  // --------------------------------------------------
+
   useEffect(() => {
     if (!googleToken) return;
+
     loadTodayStudents();
-  }, [googleToken]);
+  }, [googleToken, loadTodayStudents]);
+
+  // --------------------------------------------------
+  // AUTO-REFRESH EVERY 5 SECONDS
+  //
+  // Keeps student lists and attendance synchronized
+  // across instructors using different browsers.
+  // --------------------------------------------------
+
+  useEffect(() => {
+    if (!googleToken) return;
+
+    let active = true;
+    let inFlight = false;
+
+    const interval = setInterval(async () => {
+      if (!active || inFlight) return;
+
+      // Don't refresh during the search debounce.
+      if (filters.search !== debouncedSearch) return;
+
+      // Avoid unnecessary requests in background tabs.
+      if (document.visibilityState !== "visible") return;
+
+      inFlight = true;
+
+      try {
+        await Promise.all([
+          loadStudents(studentPage, pageSize, {
+            ...filters,
+            search: debouncedSearch
+          }),
+          loadTodayStudents()
+        ]);
+      } catch (error) {
+        console.error("Auto-refresh failed:", error);
+      } finally {
+        inFlight = false;
+      }
+    }, 5000);
+
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [
+    googleToken,
+    studentPage,
+    pageSize,
+    debouncedSearch,
+    filters.search,
+    filters.program,
+    filters.beltColor,
+    filters.track,
+    filters.rank,
+    filters.roboticsLevel,
+    filters.attendance,
+    filters.sortBy,
+    loadStudents,
+    loadTodayStudents
+  ]);
+
+  // --------------------------------------------------
+  // Helpers
+  // --------------------------------------------------
+
+  function invalidateDashboard() {
+    localStorage.removeItem("student-dashboard-v1");
+  }
 
   function refreshStudents() {
     return loadStudents(studentPage, pageSize, {
@@ -95,9 +174,12 @@ function App() {
 
   function updateFilters(updater) {
     setStudentPage(1);
+
     setFilters((previous) => ({
       ...previous,
-      ...(typeof updater === "function" ? updater(previous) : updater)
+      ...(typeof updater === "function"
+        ? updater(previous)
+        : updater)
     }));
   }
 
@@ -114,6 +196,10 @@ function App() {
     setPage("today");
   }
 
+  // --------------------------------------------------
+  // Save student
+  // --------------------------------------------------
+
   async function handleSaveStudent(studentId, studentData) {
     const success = await saveStudent(studentId, studentData);
 
@@ -124,11 +210,16 @@ function App() {
           : current
       );
 
+      invalidateDashboard();
       await refreshStudents();
     }
 
     return success;
   }
+
+  // --------------------------------------------------
+  // Create student
+  // --------------------------------------------------
 
   async function handleCreateStudent(studentData, selectedTags = []) {
     const success = await createStudent(studentData, selectedTags);
@@ -136,6 +227,9 @@ function App() {
     if (success) {
       setShowAddStudent(false);
       setStudentPage(1);
+
+      invalidateDashboard();
+
       await loadStudents(1, pageSize, {
         ...filters,
         search: debouncedSearch
@@ -145,19 +239,39 @@ function App() {
     return success;
   }
 
+  // --------------------------------------------------
+  // Check in student
+  // --------------------------------------------------
+
   async function handleCheckIn(studentId) {
     const result = await checkIn(studentId);
+
+    invalidateDashboard();
+
     await loadTodayStudents();
     await refreshStudents();
+
     return result;
   }
 
+  // --------------------------------------------------
+  // Check out student
+  // --------------------------------------------------
+
   async function handleCheckOut(sessionId) {
     const result = await checkOut(sessionId);
+
+    invalidateDashboard();
+
     await loadTodayStudents();
     await refreshStudents();
+
     return result;
   }
+
+  // --------------------------------------------------
+  // Authentication
+  // --------------------------------------------------
 
   if (!googleToken) {
     return (
@@ -170,11 +284,25 @@ function App() {
     );
   }
 
+  // --------------------------------------------------
+  // Application UI
+  // --------------------------------------------------
+
   return (
     <div className="app">
       {page === "students" && (
         <aside className="sidebar">
           <h2>Student Progress</h2>
+
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedStudent(null);
+              setPage("dashboard");
+            }}
+          >
+            Dashboard
+          </button>
 
           <input
             className="search"
@@ -194,7 +322,12 @@ function App() {
       )}
 
       <main className="content">
-        {page === "today" ? (
+        {page === "dashboard" ? (
+          <Dashboard
+            todayStudents={todayStudents}
+            onBack={() => setPage("students")}
+          />
+        ) : page === "today" ? (
           <TodayStudents
             todayStudents={todayStudents}
             onSaveSession={saveSession}
