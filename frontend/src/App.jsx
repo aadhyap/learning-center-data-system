@@ -239,6 +239,21 @@ function App() {
     return success;
   }
 
+  async function handleSaveSession(sessionId, sessionData) {
+  const success = await saveSession(sessionId, sessionData);
+
+  if (success) {
+    invalidateDashboard();
+
+    await Promise.all([
+      loadTodayStudents(),
+      refreshStudents()
+    ]);
+  }
+
+  return success;
+}
+
   // --------------------------------------------------
   // Check in student
   // --------------------------------------------------
@@ -330,7 +345,7 @@ function App() {
         ) : page === "today" ? (
           <TodayStudents
             todayStudents={todayStudents}
-            onSaveSession={saveSession}
+            onSaveSession={handleSaveSession}
             loadTodayStudents={loadTodayStudents}
             loadStudents={refreshStudents}
             onBack={() => {
