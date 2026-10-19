@@ -457,3 +457,7 @@ def finalize_today():
 
 
 app.include_router(protected)
+
+from export_routes import router as export_router
+
+app.include_router(export_router)

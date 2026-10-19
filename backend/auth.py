@@ -12,7 +12,7 @@ ALLOWED_EMAILS = {
     if email.strip()
 }
 
-
+#requires aunthentication
 def require_auth(authorization: str | None = Header(default=None)):
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(
